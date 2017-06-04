@@ -74,33 +74,6 @@ LABELS = (
         'hotkey':   's',
         'text':     'Start Gate Post'
     },
-    {
-        'attributes': {
-            'class':      'rect',
-        },
-        'inserter': 'sloth.items.RectItemInserter',
-        'item':     'sloth.items.RectItem',
-        'hotkey':   'x',
-        'text':     'Rectangle',
-    },
-    {
-        'attributes': {
-            'class':    'point',
-        },
-        'inserter': 'sloth.items.PointItemInserter',
-        'item':     'sloth.items.PointItem',
-        'hotkey':   'p',
-        'text':     'Point',
-    },
-    {
-        'attributes': {
-            'class':    'polygon',
-        },
-        'inserter': 'sloth.items.PolygonItemInserter',
-        'item':     'sloth.items.PolygonItem',
-        'hotkey':   'o',
-        'text':     'Polygon',
-    },
 )
 
 # HOTKEYS
