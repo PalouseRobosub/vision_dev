@@ -68,7 +68,6 @@ LABELS = (
         'attributes': {
             'type':       'rect',
             'class':      'start_gate_post',
-            'id':         ['left', 'right']
         },
         'item':     'sloth.items.IDRectItem',
         'inserter': 'sloth.items.RectItemInserter',
