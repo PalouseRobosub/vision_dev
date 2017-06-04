@@ -82,7 +82,7 @@ LABELS = (
         'inserter': 'sloth.items.RectItemInserter',
         'item':     'sloth.items.RectItem',
         'hotkey':   'x',
-        'name':     'Rectangle',
+        'text':     'Rectangle',
     },
     {
         'attributes': {
