@@ -109,6 +109,7 @@ HOTKEYS = (
     ('ESC',       lambda lt: lt.exitInsertMode(),            'Exit insert mode'),
     ('Shift+l',   lambda lt: lt.currentImage().setUnlabeled(False), 'Mark current image as labeled'),
     ('Shift+c',   lambda lt: lt.currentImage().confirmAll(), 'Mark all annotations in image as confirmed'),
+    ('Shift+i',   lambda lt: lt.copyAnnotations.copy(),      'Copy all annotations from the previous image to this one'),
 )
 
 # CONTAINERS
@@ -133,6 +134,6 @@ CONTAINERS = (
 # classes can either be given directly or their module path be specified 
 # as string.
 PLUGINS = (
+    ('plugins.label_remover.LabelRemoverPlugin',)
 )
-
 
