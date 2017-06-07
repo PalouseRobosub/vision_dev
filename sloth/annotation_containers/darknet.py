@@ -109,7 +109,8 @@ class DarknetContainer(AnnotationContainer):
         Overwritten to write darknet files
         """
         print("Writing to file: {}".format(fname))
-        parentDir = os.path.split(fname)[0] + "/"
+        parentDir = os.path.split(fname)[0]
+        parentDir = parentDir + ("/" if parentDir else "")
         with open(fname, "w") as f:
             print("File open")
             labels = []
@@ -135,6 +136,7 @@ class DarknetContainer(AnnotationContainer):
             # Write each file's annotations
             for an in annotations:
                 f.write(">> \"" + an['filename'] + "\"\n")
+                print("Using parent Dir: {}".format(parentDir))
                 print("Getting image size of: {}".format(an["filename"]))
                 path = parentDir + an['filename']
                 size = self.get_image_size(path)

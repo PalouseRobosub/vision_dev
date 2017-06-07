@@ -37,8 +37,8 @@ def write_to_file(fname, text):
 
 def create_training_list(tlist, outname):
     print("Writing training list")
-    if not os.path.exists(outname):
-        os.makedirs(outname)
+    if not os.path.exists(os.path.split(outname)[0]) and os.path.split(outname)[0] is not "":
+        os.makedirs(os.path.split(outname)[0])
     with open(outname, 'w') as f:
         for line in tlist:
             f.write(line)
