@@ -48,7 +48,7 @@ Provided, is the sloth configuration file, `robosub_config.py`, to specialize sl
             :
       ---
       >> "filename_1.jpg"
-      <class number> <x_position_ratio> <y_position_ratio> <width_ratio> <height_ratio> //Darknet  format line
+      <class number> <x_position_ratio> <y_position_ratio> <width_ratio> <height_ratio> //Darknet format line
       <<
       >> "filename_2.png"
       <<
@@ -68,7 +68,7 @@ Provided, is the sloth configuration file, `robosub_config.py`, to specialize sl
 - ### sloth_to_darknet.py
    Converts from the *.darknet format specified above to multiple files within an output directory and a training list used with Darknet
    - #### Usage
-      `./sloth_to_darknet.py -f <filename> -o <output directory> [-t <training list filename>]
+      `./sloth_to_darknet.py -f <filename> -o <output directory> [-t <training list filename>]`
       - filename: [string] The filepath to the *.darknet file from which to extract information.
       - output directory: [string] The directory into which the darknet compatible annotation files are output.
       - (optional) training list filename: [string] The filename of the output training list
