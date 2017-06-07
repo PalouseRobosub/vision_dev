@@ -38,7 +38,7 @@ class ImageCreator():
 
         # Open bag file.
         with rosbag.Bag(filename, 'r') as bag:
-            for topic, msg, t in bag.read_messages():
+            for topic, msg, t in bag.read_messages(connection_filter=self.filter_std_image):
                 try:
                     cv_image = self.bridge.imgmsg_to_cv2(msg, "bgr8")
                     timestr = "%.6f" % msg.header.stamp.to_sec()
@@ -47,7 +47,23 @@ class ImageCreator():
                     cv.imwrite(image_name, cv_image)
                 except CvBridgeError, e:
                     print (e)
-
+            for topic, msg, t in bag.read_messages(connection_filter=self.filter_wfov_image):
+                try:
+                    cv_image = self.bridge.imgmsg_to_cv2(msg.image, "bgr8")
+                    timestr = "%.6f" % msg.header.stamp.to_sec()
+                    image_name = str(save_dir)+timestr+".png"
+                    print ("saving image:" + image_name)
+                    cv.imwrite(image_name, cv_image)
+                except CvBridgeError, e:
+                    print (e)
+    
+    # Allows only std_msgs/Image messages
+    def filter_std_image(self, topic, datatype, md5sum, msg_def, header):
+        return (True if "std_msgs/Image" in datatype else False)
+    
+    # Allows only WFOVImage messages
+    def filter_wfov_image(self, topic, datatype, md5sum, msg_def, header):
+        return (True if "wfov_camera_msgs/WFOVImage" in datatype else False)
 
 # Main function.    
 if __name__ == '__main__':
