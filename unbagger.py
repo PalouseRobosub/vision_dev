@@ -57,9 +57,9 @@ class ImageCreator():
                 except CvBridgeError, e:
                     print (e)
     
-    # Allows only std_msgs/Image messages
+    # Allows only sensor_msgs/Image messages
     def filter_std_image(self, topic, datatype, md5sum, msg_def, header):
-        return (True if "std_msgs/Image" in datatype else False)
+        return (True if "sensor_msgs/Image" in datatype else False)
     
     # Allows only WFOVImage messages
     def filter_wfov_image(self, topic, datatype, md5sum, msg_def, header):
