@@ -10,4 +10,4 @@ if [ -z "$DIR" ] ; then
     exit 1
 fi
 
-sloth -c $DIR/robosub_config.py --pythonpath=$DIR $1
+sloth $1 -c "$DIR"/robosub_config.py --pythonpath="$DIR" "${@:2}"
