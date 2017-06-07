@@ -30,23 +30,23 @@ class LabelRemoverPlugin(QObject):
         self.toRemoveLabel = QLabel(self.dialog)
         self.labelsLabel = QLabel(self.dialog)
 
-        self.acceptButton.move(425,220)
+        self.acceptButton.move(435,220)
         self.acceptButton.clicked.connect(self.remove)
-        self.cancelButton.move(100,220)
+        self.cancelButton.move(110,220)
         self.cancelButton.clicked.connect(self.cancel)
-        self.moveRightButton.move(260,70)
+        self.moveRightButton.move(270,70)
         self.moveRightButton.clicked.connect(self.moveToRemove)
-        self.moveLeftButton.move(260,120)
+        self.moveLeftButton.move(270,120)
         self.moveLeftButton.clicked.connect(self.moveFromRemove)
-        self.annList.move(0, 20)
-        self.removeList.move(350, 20)
+        self.annList.move(10, 20)
+        self.removeList.move(360, 20)
         for i in config.LABELS:
            print(i['attributes']['class'])
            self.annList.addItem(i['attributes']['class'] + " : " + i['text'])
         self.toRemoveLabel.setText("To Remove")
         self.labelsLabel.setText("Labels")
-        self.labelsLabel.move(100, 0)
-        self.toRemoveLabel.move(425, 0)
+        self.labelsLabel.move(110, 0)
+        self.toRemoveLabel.move(435, 0)
 
     def remove(self):
         print("Remove stuff")
@@ -54,6 +54,10 @@ class LabelRemoverPlugin(QObject):
         for i in xrange(self.removeList.count()):
             items.append(self.removeList.item(i))
         print([i.text() for i in items])
+
+        annotationClass = i.text().split(" : ")[0]
+
+        self.dialog.close()
 
     def moveToRemove(self):
         selection = self.annList.currentRow()
