@@ -40,18 +40,20 @@ class ImageCreator():
         with rosbag.Bag(filename, 'r') as bag:
             for topic, msg, t in bag.read_messages(connection_filter=self.filter_std_image):
                 try:
+                    prefix = "left" if "left" in topic else "right" if "right" in topic else "bottom"
                     cv_image = self.bridge.imgmsg_to_cv2(msg, "bgr8")
                     timestr = "%.6f" % msg.header.stamp.to_sec()
-                    image_name = str(save_dir)+timestr+".png"
+                    image_name = str(save_dir) + prefix + "_" + timestr + ".png"
                     print ("saving image:" + image_name)
                     cv.imwrite(image_name, cv_image)
                 except CvBridgeError, e:
                     print (e)
             for topic, msg, t in bag.read_messages(connection_filter=self.filter_wfov_image):
                 try:
+                    prefix = "left" if "left" in topic else "right" if "right" in topic else "bottom"
                     cv_image = self.bridge.imgmsg_to_cv2(msg.image, "bgr8")
                     timestr = "%.6f" % msg.header.stamp.to_sec()
-                    image_name = str(save_dir)+timestr+".png"
+                    image_name = str(save_dir) + prefix + "_" + timestr + ".png"
                     print ("saving image:" + image_name)
                     cv.imwrite(image_name, cv_image)
                 except CvBridgeError, e:
@@ -72,4 +74,4 @@ if __name__ == '__main__':
     # Go to class functions that do all the heavy lifting. Do error checking.
     try:
         image_creator = ImageCreator()
-    except rospy.ROSInterruptException: pass
+    except rospy.ROSInterruptException, e: pass
