@@ -6,6 +6,7 @@ from PyQt4.QtCore import *
 from sloth.core.commands import register_command, get_commands
 from sloth.core.cli import BaseCommand, CommandError
 from sloth.conf import config
+from sloth.annotations.model import AnnotationModelItem
 
 class LabelRemoverPlugin(QObject):
     def __init__(self, labeltool):
@@ -41,7 +42,6 @@ class LabelRemoverPlugin(QObject):
         self.annList.move(10, 20)
         self.removeList.move(360, 20)
         for i in config.LABELS:
-           print(i['attributes']['class'])
            self.annList.addItem(i['attributes']['class'] + " : " + i['text'])
         self.toRemoveLabel.setText("To Remove")
         self.labelsLabel.setText("Labels")
@@ -57,17 +57,25 @@ class LabelRemoverPlugin(QObject):
 
         print(annotations)
 
-        print(self._labeltool.annotations())
+        #print(self._labeltool.annotations())
 
-        for ann in self._labeltool.annotations():
-            for i in ann['annotations']:
-                if i['class'] in annotations:
-                    print("Removing: {}".format(i))
-                    ann['annotations'].remove(i)
+        model = self._labeltool.model()
 
-        print(self._labeltool.annotations())
+        count = 0
+        for node in model.iterator():
+            #print("{}: {}".format(len(ann['annotations']), ann['annotations']))
+            #print("    {}".format(ann['annotations'][-1]))
+            toRemove = []
+            data = node.data()
+            if data in annotations:
+                node.parent().children().remove(node)
+                count += 1
 
-        self.dialog.close()
+        print("Removed {} annotations of type(s) {}".format(count, annotations))
+        self.dialog.close()\
+
+        self._labeltool.gotoNext()
+        self._labeltool.gotoPrevious()
 
     def moveToRemove(self):
         selection = self.annList.currentRow()
