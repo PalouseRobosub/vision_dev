@@ -39,6 +39,9 @@ class ImageCreator():
         # Open bag file.
         with rosbag.Bag(filename, 'r') as bag:
             for topic, msg, t in bag.read_messages(connection_filter=self.filter_std_image):
+                if rospy.is_shutdown():
+                    print("ROS Shutdown while reading std images")
+                    sys.exit(0)
                 try:
                     prefix = "left" if "left" in topic else "right" if "right" in topic else "bottom"
                     cv_image = self.bridge.imgmsg_to_cv2(msg, "bgr8")
@@ -49,6 +52,9 @@ class ImageCreator():
                 except CvBridgeError, e:
                     print (e)
             for topic, msg, t in bag.read_messages(connection_filter=self.filter_wfov_image):
+                if rospy.is_shutdown():
+                    print("ROS Shutdown while reading WFOV images")
+                    sys.exit(0)
                 try:
                     prefix = "left" if "left" in topic else "right" if "right" in topic else "bottom"
                     cv_image = self.bridge.imgmsg_to_cv2(msg.image, "bgr8")
