@@ -69,10 +69,20 @@ LABELS = (
             'type':       'rect',
             'class':      'start_gate_post',
         },
-        'item':     'sloth.items.IDRectItem',
+        'item':     'sloth.items.RectItem',
         'inserter': 'sloth.items.RectItemInserter',
         'hotkey':   's',
         'text':     'Start Gate Post'
+    },
+    {
+        'attributes': {
+            'type':       'rect',
+            'class':      'path_marker',
+        },
+        'item':     'sloth.items.RectItem',
+        'inserter': 'sloth.items.RectItemInserter',
+        'hotkey':   'p',
+        'text':     'Path Marker'
     },
 )
 
