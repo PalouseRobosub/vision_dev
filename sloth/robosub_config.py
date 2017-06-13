@@ -109,7 +109,12 @@ HOTKEYS = (
     ('ESC',       lambda lt: lt.exitInsertMode(),            'Exit insert mode'),
     ('Shift+l',   lambda lt: lt.currentImage().setUnlabeled(False), 'Mark current image as labeled'),
     ('Shift+c',   lambda lt: lt.currentImage().confirmAll(), 'Mark all annotations in image as confirmed'),
-    ('c',   lambda lt: lt.mainWindow().copyAnnotations.copy(),      'Copy all annotations from the previous image to this one'),
+    ('c',         lambda lt: lt.mainWindow().copyAnnotations.copy(), 'Copy all annotations from the previous image to this one'),
+    ('n',         [lambda lt: lt.currentImage().confirmAll(),
+                   lambda lt: lt.currentImage().setUnlabeled(False),
+                   lambda lt: lt.gotoNext(),
+                   lambda lt: lt.mainWindow().copyAnnotations.copy()
+                  ],                                         'Mark image as labeled/confirmed and go to next then copy all annotations from the previous image.'),
 )
 
 # CONTAINERS
