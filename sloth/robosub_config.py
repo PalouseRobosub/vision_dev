@@ -1,3 +1,5 @@
+from items.items import toggleShowLabels
+
 # This is sloth's default configuration.
 #
 # The configuration file is a simple python module with module-level
@@ -115,6 +117,7 @@ HOTKEYS = (
                    lambda lt: lt.gotoNext(),
                    lambda lt: lt.mainWindow().copyAnnotations.copy()
                   ],                                         'Mark image as labeled/confirmed and go to next then copy all annotations from the previous image.'),
+    ('F5',        lambda lt: toggleShowLabels(), 'Toggle showing labels on boxes'),
 )
 
 # CONTAINERS
