@@ -111,8 +111,8 @@ if __name__ == "__main__":
     
     training_filename = os.path.join(args.output_dir, "train.txt")
     validation_filename = os.path.join(args.output_dir, "validation.txt")
-    names_filename = os.path.join(args.output_dir, args.output_dir + ".names")
-    data_filename = os.path.join(args.output_dir, args.output_dir + ".data")
+    names_filename = os.path.join(args.output_dir, os.path.split(args.output_dir)[1] + ".names")
+    data_filename = os.path.join(args.output_dir, os.path.split(args.output_dir)[1] + ".data")
     backup_filename = os.path.abspath(args.backup_file)
     num_names = len(names)
 
