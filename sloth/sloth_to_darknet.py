@@ -2,20 +2,24 @@
 
 import os
 import argparse
+import random
+import shutil
 
 def extract_data(fname):
     pairs = []
+    labels = {}
     with open(fname, 'r') as f:
         filename = ""
         text = []
-        trashingHeader = False
+        readingHeader = False
         for line in f:
-            if "---" in line and not trashingHeader:
-                trashingHeader = True
+            if "---" in line and not readingHeader:
+                readingHeader = True
             elif "---" in line:
                 break
             else:
-                pass
+                tmp = line.split(':')
+                labels[int(tmp[1])] = tmp[0]
         for line in f:
             if ">>" in line:
                 filename = line.split(" ")[1][1:-2]
@@ -25,7 +29,7 @@ def extract_data(fname):
                filename = ""
             else:
                 text.append(line) 
-    return pairs
+    return pairs, labels
 
 def write_to_file(fname, text):
     print("Writing to {}".format(fname))
@@ -34,6 +38,12 @@ def write_to_file(fname, text):
     with open(fname, 'w') as f:
         for line in text:
             f.write(line)
+
+def copy_image(src, dst):
+    print("Copying {} to {}".format(src, dst))
+    if not os.path.exists(os.path.split(dst)[0]):
+        os.makedirs(os.path.split(dst)[0])
+    shutil.copy(src, dst)
 
 def create_training_list(tlist, outname):
     print("Writing training list")
@@ -44,11 +54,50 @@ def create_training_list(tlist, outname):
             f.write(line)
             f.write("\n")
 
+def create_names(names, filename):
+    print("Writing names list")
+    if not os.path.exists(os.path.split(filename)[0]) and os.path.split(filename)[0] is not "":
+        os.makedirs(os.path.split(filename)[0])
+
+    i = 0
+    with open(filename, 'w') as f:
+        while len(names) > 0:
+            if i not in names.keys():
+                continue
+            f.write(names[i] + "\n")
+            del names[i]
+            i = i + 1
+
+def create_data(num_names, training_filename, validation_filename, names_filename, backup_filename, data_filename):
+    print("Writing data file")
+    if not os.path.exists(os.path.split(data_filename)[0]) and os.path.split(data_filename)[0] is not "":
+        os.makedirs(os.path.split(data_filename)[0])
+    
+    with open(data_filename, 'w') as f:
+        f.write("classes = " + str(num_names) + "\n")
+        f.write("train = " + training_filename + "\n")
+        f.write("valid = " + validation_filename + "\n")
+        f.write("names = " + names_filename + "\n")
+        f.write("backup = " + data_filename + "\n")
+
+def restricted_float(x):
+    x = float(x)
+    if x < 0.0 or x >= 1.0:
+        raise argparse.ArgumentTypeError("%r not in range [0.0, 1.0)"%(x,))
+    
+    return x
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Convert from sloth *.darknet format, to proper darknet used files")
-    parser.add_argument("--filename", "-f", type=str, help="A relative path to the *.darknet file", required=True)
-    parser.add_argument("--output-dir","-o", type=str, help="the path where the annotation files will be saved", required=True)
-    parser.add_argument("--training-name", "-t", type=str, help="The filename of the output training list", default="training-list.txt")
+    try:
+        parser.add_argument("--filename", "-f", type=str, help="A relative path to the *.darknet file", required=True)
+        parser.add_argument("--output-dir","-o", type=str, help="the path where the annotation files will be saved", required=True)
+        parser.add_argument("--percent-validation", "-v", type=restricted_float, help="The percentage of data as a float (0.0 - 1.0) to use as validation data. (default: 0.1)", required=False, default=0.1)
+        #parser.add_argument("--training-name", "-t", type=str, help="The filename of the output training list", default="training-list.txt")
+        parser.add_argument("--backup-file", "-b", type=str, help="The file to use as a backup. (Only writes to *.data file)", required=False, default="./")
+    except:
+        parser.print_help()
+        exit(1)
 
     args = parser.parse_args()
 
@@ -56,14 +105,33 @@ if __name__ == "__main__":
         print("Invalid input filename, must be of file format *.darknet")
         exit()
 
-    data = extract_data(args.filename)
-
+    data, names = extract_data(args.filename)
+    percentValidation = float(args.percent_validation)
     args.output_dir = os.path.normpath(args.output_dir)
+    
+    training_filename = os.path.join(args.output_dir, "train.txt")
+    validation_filename = os.path.join(args.output_dir, "validation.txt")
+    names_filename = os.path.join(args.output_dir, args.output_dir + ".names")
+    data_filename = os.path.join(args.output_dir, args.output_dir + ".data")
+    backup_filename = os.path.abspath(args.backup_file)
+    num_names = len(names)
+
     training_list = []
+    validation_list = []
+
     for f, text in data:
         filename = ".".join(f.split(".")[0:-1]) + ".txt"
-        training_list.append(os.path.normpath(os.path.join(os.path.abspath(os.path.split(args.filename)[0]), f)))
-        write_to_file(os.path.normpath(args.output_dir + "/" + filename), text)
+        pathname = os.path.join(args.output_dir, "images/" + os.path.split(f)[1])
+        if random.random() < percentValidation:
+            validation_list.append(pathname)
+        else:
+            training_list.append(pathname)
+        write_to_file(os.path.normpath(args.output_dir + "/labels/" + os.path.split(filename)[1]), text)
+        image_location = os.path.normpath(os.path.abspath(os.path.normpath(os.path.join(os.path.split(args.filename)[0], f))))
+        copy_image(image_location, os.path.abspath(pathname))
 
-    print(training_list)
-    create_training_list(training_list, args.training_name)
+    create_training_list(training_list, training_filename)
+    create_training_list(validation_list, validation_filename)
+    create_names(names, names_filename)
+
+    create_data(num_names, training_filename, validation_filename, names_filename, backup_filename, data_filename)
