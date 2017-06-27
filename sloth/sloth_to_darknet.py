@@ -78,7 +78,7 @@ def create_data(num_names, training_filename, validation_filename, names_filenam
         f.write("train = " + training_filename + "\n")
         f.write("valid = " + validation_filename + "\n")
         f.write("names = " + names_filename + "\n")
-        f.write("backup = " + data_filename + "\n")
+        f.write("backup = " + backup_filename + "\n")
 
 def restricted_float(x):
     x = float(x)
@@ -94,7 +94,7 @@ if __name__ == "__main__":
         parser.add_argument("--output-dir","-o", type=str, help="the path where the annotation files will be saved", required=True)
         parser.add_argument("--percent-validation", "-v", type=restricted_float, help="The percentage of data as a float (0.0 - 1.0) to use as validation data. (default: 0.1)", required=False, default=0.1)
         #parser.add_argument("--training-name", "-t", type=str, help="The filename of the output training list", default="training-list.txt")
-        parser.add_argument("--backup-file", "-b", type=str, help="The file to use as a backup. (Only writes to *.data file)", required=False, default="./")
+        parser.add_argument("--backup-file", "-b", type=str, help="The file to use as a backup. (Only writes to *.data file)", required=False, default="backup")
     except:
         parser.print_help()
         exit(1)
