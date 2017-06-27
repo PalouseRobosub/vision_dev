@@ -121,7 +121,7 @@ if __name__ == "__main__":
 
     for f, text in data:
         filename = ".".join(f.split(".")[0:-1]) + ".txt"
-        pathname = os.path.join(args.output_dir, "images/" + os.path.split(f)[1])
+        pathname = os.path.join(os.path.split(args.output_dir)[1], "images/" + os.path.split(f)[1])
         if random.random() < percentValidation:
             validation_list.append(pathname)
         else:
