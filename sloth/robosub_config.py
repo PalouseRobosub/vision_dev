@@ -110,7 +110,7 @@ HOTKEYS = (
     ('Del',       lambda lt: lt.deleteSelectedAnnotations(), 'Delete selected annotations'),
     ('Ctrl+Shift+Del', [lambda lt: lt.selectAllAnnotations(),
                    lambda lt: lt.deleteSelectedAnnotations(),
-                   lambda lt: lt.setUnlabeled(True)],'Delete all annotations on this image'),
+                   lambda lt: lt.setUnlabeled(True)],'Delete all annotations on this image and mark it as unlabeled'),
     ('ESC',       lambda lt: lt.exitInsertMode(),            'Exit insert mode'),
     ('Shift+l',   lambda lt: lt.currentImage().setUnlabeled(False), 'Mark current image as labeled'),
     ('Shift+c',   lambda lt: lt.currentImage().confirmAll(), 'Mark all annotations in image as confirmed'),
