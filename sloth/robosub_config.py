@@ -1,4 +1,5 @@
 from items.items import toggleShowLabels
+from sloth.annotations.model import CopyAnnotations
 
 # This is sloth's default configuration.
 #
@@ -110,11 +111,12 @@ HOTKEYS = (
     ('Del',       lambda lt: lt.deleteSelectedAnnotations(), 'Delete selected annotations'),
     ('Ctrl+Shift+Del', [lambda lt: lt.selectAllAnnotations(),
                    lambda lt: lt.deleteSelectedAnnotations(),
-                   lambda lt: lt.setUnlabeled(True)],'Delete all annotations on this image and mark it as unlabeled'),
+                   lambda lt: lt.currentImage().setUnlabeled(True)],'Delete all annotations on this image and mark it as unlabeled'),
     ('ESC',       lambda lt: lt.exitInsertMode(),            'Exit insert mode'),
     ('Shift+l',   lambda lt: lt.currentImage().setUnlabeled(False), 'Mark current image as labeled'),
     ('Shift+c',   lambda lt: lt.currentImage().confirmAll(), 'Mark all annotations in image as confirmed'),
     ('c',         lambda lt: lt.mainWindow().copyAnnotations.copy(), 'Copy all annotations from the previous image to this one'),
+    ('Ctrl+c',    lambda lt: CopyAnnotations(lt, overlap_threshold=0.9).copy(), 'Copy all non-overlapping annotations from the previous image'),
     ('n',         [lambda lt: lt.currentImage().confirmAll(),
                    lambda lt: lt.currentImage().setUnlabeled(False),
                    lambda lt: lt.gotoNext(),
