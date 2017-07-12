@@ -4,6 +4,7 @@ import os
 import argparse
 import random
 import shutil
+#import logging as log
 
 def extract_data(fname):
     pairs = []
@@ -32,7 +33,7 @@ def extract_data(fname):
     return pairs, labels
 
 def write_to_file(fname, text):
-    print("Writing to {}".format(fname))
+    #log.debug("Writing to {}".format(fname))
     if not os.path.exists(os.path.split(fname)[0]):
         os.makedirs(os.path.split(fname)[0])
     with open(fname, 'w') as f:
@@ -40,13 +41,13 @@ def write_to_file(fname, text):
             f.write(line)
 
 def copy_image(src, dst):
-    print("Copying {} to {}".format(src, dst))
+    #log.debug("Copying {} to {}".format(src, dst))
     if not os.path.exists(dst):
         os.makedirs(dst)
     shutil.copy(src, dst)
 
 def create_training_list(tlist, outname):
-    print("Writing training list")
+    #log.debug("Writing training list")
     if not os.path.exists(os.path.split(outname)[0]) and os.path.split(outname)[0] is not "":
         os.makedirs(os.path.split(outname)[0])
     with open(outname, 'w') as f:
@@ -55,7 +56,7 @@ def create_training_list(tlist, outname):
             f.write("\n")
 
 def create_names(names, filename):
-    print("Writing names list")
+    #log.debug("Writing names list")
     if not os.path.exists(os.path.split(filename)[0]) and os.path.split(filename)[0] is not "":
         os.makedirs(os.path.split(filename)[0])
 
@@ -68,16 +69,16 @@ def create_names(names, filename):
             del names[i]
             i = i + 1
 
-def create_data(num_names, training_filename, validation_filename, names_filename, backup_filename, data_filename):
-    print("Writing data file")
+def create_data(num_names, training_filename, validation_filename, names_filename, backup_filename, data_filename, outputdir):
+    #log.debug("Writing data file")
     if not os.path.exists(os.path.split(data_filename)[0]) and os.path.split(data_filename)[0] is not "":
         os.makedirs(os.path.split(data_filename)[0])
     
     with open(data_filename, 'w') as f:
         f.write("classes = " + str(num_names) + "\n")
-        f.write("train = " + training_filename + "\n")
-        f.write("valid = " + validation_filename + "\n")
-        f.write("names = " + names_filename + "\n")
+        f.write("train = " + os.path.relpath(training_filename, outputdir) + "\n")
+        f.write("valid = " + os.path.relpath(validation_filename, outputdir) + "\n")
+        f.write("names = " + os.path.relpath(names_filename, outputdir) + "\n")
         f.write("backup = " + backup_filename + "\n")
 
 def restricted_float(x):
@@ -94,10 +95,12 @@ if __name__ == "__main__":
         parser.add_argument("--output-dir","-o", type=str, help="the path where the annotation files will be saved", required=True)
         parser.add_argument("--percent-validation", "-v", type=restricted_float, help="The percentage of data as a float (0.0 - 1.0) to use as validation data. (default: 0.1)", required=False, default=0.1)
         #parser.add_argument("--training-name", "-t", type=str, help="The filename of the output training list", default="training-list.txt")
-        parser.add_argument("--backup-file", "-b", type=str, help="The file to use as a backup. (Only writes to *.data file)", required=False, default="backup")
+        parser.add_argument("--backup-file", "-b", type=str, help="The filename to use as a backup. (Only writes to *.data file)", required=False, default="backup.bak")
     except:
         parser.print_help()
         exit(1)
+
+    #log.basicConfig(filename='out.log', filemode='w', level=logging.DEBUG, format='%(asctime)s %(message)s')
 
     args = parser.parse_args()
 
@@ -113,7 +116,7 @@ if __name__ == "__main__":
     validation_filename = os.path.join(args.output_dir, "validation.txt")
     names_filename = os.path.join(args.output_dir, os.path.split(args.output_dir)[1] + ".names")
     data_filename = os.path.join(args.output_dir, os.path.split(args.output_dir)[1] + ".data")
-    backup_filename = os.path.abspath(args.backup_file)
+    backup_filename = args.backup_file
     num_names = len(names)
 
     training_list = []
@@ -134,4 +137,4 @@ if __name__ == "__main__":
     create_training_list(validation_list, validation_filename)
     create_names(names, names_filename)
 
-    create_data(num_names, training_filename, validation_filename, names_filename, backup_filename, data_filename)
+    create_data(num_names, training_filename, validation_filename, names_filename, backup_filename, data_filename, args.output_dir)
