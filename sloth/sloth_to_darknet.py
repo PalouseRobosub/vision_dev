@@ -41,8 +41,8 @@ def write_to_file(fname, text):
 
 def copy_image(src, dst):
     print("Copying {} to {}".format(src, dst))
-    if not os.path.exists(os.path.split(dst)[0]):
-        os.makedirs(os.path.split(dst)[0])
+    if not os.path.exists(dst):
+        os.makedirs(dst)
     shutil.copy(src, dst)
 
 def create_training_list(tlist, outname):
@@ -128,7 +128,7 @@ if __name__ == "__main__":
             training_list.append(pathname)
         write_to_file(os.path.normpath(args.output_dir + "/labels/" + os.path.split(filename)[1]), text)
         image_location = os.path.normpath(os.path.abspath(os.path.normpath(os.path.join(os.path.split(args.filename)[0], f))))
-        copy_image(image_location, os.path.abspath(pathname))
+        copy_image(image_location, os.path.abspath(os.path.join(args.output_dir, "images/")))
 
     create_training_list(training_list, training_filename)
     create_training_list(validation_list, validation_filename)
