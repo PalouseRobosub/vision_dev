@@ -73,7 +73,9 @@ def create_data(num_names, training_filename, validation_filename, names_filenam
     #log.debug("Writing data file")
     if not os.path.exists(os.path.split(data_filename)[0]) and os.path.split(data_filename)[0] is not "":
         os.makedirs(os.path.split(data_filename)[0])
-    
+   
+    outputdir = os.path.split(outputdir)[0]
+
     with open(data_filename, 'w') as f:
         f.write("classes = " + str(num_names) + "\n")
         f.write("train = " + os.path.relpath(training_filename, outputdir) + "\n")
