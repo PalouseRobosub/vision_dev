@@ -37,7 +37,7 @@ for f in ${src_dir}/*.tar; do
 done
 
 # copy any lingering .jsons to the merge directory while we are at it 
-cp ${src_dir}/*.json ${merge_dir}
+\cp ${src_dir}/*.json ${merge_dir}
 
 
 # create dummy json for all files to merge into
