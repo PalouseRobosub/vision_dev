@@ -10,7 +10,7 @@
 #   you can run ./download_data.sh initial/red_buoy_sub_00 0 1 3
 
 
-BASE_URL='http://robosub.eecs.wsu.edu/data/2017/vision_labeling'
+BASE_URL='http://robosub-vm.eecs.wsu.edu/data/2017/vision/labeling/labeling_todo'
 SUB_PATH=$1
 
 if [ "$SUB_PATH" == "" ] ; then
