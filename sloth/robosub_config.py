@@ -87,6 +87,46 @@ LABELS = (
         'hotkey':   'p',
         'text':     'Path Marker'
     },
+    {
+        'attributes': {
+            'type':       'rect',
+            'class':      'navigation_channel',
+        },
+        'item':     'items.items.LabeledRectItem',
+        'inserter': 'sloth.items.RectItemInserter',
+        'hotkey':   '',
+        'text':     'Navigation Channel'
+    },
+    {
+        'attributes': {
+            'type':       'rect',
+            'class':      'torpedo_target',
+        },
+        'item':     'items.items.LabeledRectItem',
+        'inserter': 'sloth.items.RectItemInserter',
+        'hotkey':   '',
+        'text':     'Torpedo Target'
+    },
+    {
+        'attributes': {
+            'type':       'rect',
+            'class':      'torpedo_hole',
+        },
+        'item':     'items.items.LabeledRectItem',
+        'inserter': 'sloth.items.RectItemInserter',
+        'hotkey':   '',
+        'text':     'Torpedo Hole'
+    },
+    {
+        'attributes': {
+            'type':       'rect',
+            'class':      'torpedo_cover',
+        },
+        'item':     'items.items.LabeledRectItem',
+        'inserter': 'sloth.items.RectItemInserter',
+        'hotkey':   '',
+        'text':     'Torpedo Cover'
+    }
 )
 
 # HOTKEYS
