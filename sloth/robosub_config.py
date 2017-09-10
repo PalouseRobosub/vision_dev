@@ -125,7 +125,7 @@ LABELS = (
         'item':     'items.items.LabeledRectItem',
         'inserter': 'sloth.items.RectItemInserter',
         'hotkey':   ',',
-        'text':     ' Object pickup platform'
+        'text':     'Object pickup platform'
     },
     {
         'attributes': {
