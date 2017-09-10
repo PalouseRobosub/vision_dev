@@ -4,7 +4,7 @@ from sloth.annotations.model import CopyAnnotations
 # This is sloth's default configuration.
 #
 # The configuration file is a simple python module with module-level
-# variables.  This module contains the default values for sloth's 
+# variables.  This module contains the default values for sloth's
 # configuration variables.
 #
 # In all cases in the configuration where a python callable (such as a
@@ -19,16 +19,16 @@ from sloth.annotations.model import CopyAnnotations
 # be one dictionary that contains the following keys:
 #
 #   - 'item' : Visualization item for this label. This can be
-#              any python callable or a module path string 
+#              any python callable or a module path string
 #              implementing the visualization item interface.
 #
 #   - 'inserter' : (optional) Item inserter for this label.
 #                  If the user selects to insert a new label of this class
-#                  the inserter is responsible to actually 
+#                  the inserter is responsible to actually
 #                  capture the users mouse actions and insert
 #                  a new label into the annotation model.
 #
-#   - 'hotkey' : (optional) A keyboard shortcut starting 
+#   - 'hotkey' : (optional) A keyboard shortcut starting
 #                the insertion of a new label of this class.
 #
 #   - 'attributes' : (optional) A dictionary that defines the
@@ -94,7 +94,7 @@ LABELS = (
         },
         'item':     'items.items.LabeledRectItem',
         'inserter': 'sloth.items.RectItemInserter',
-        'hotkey':   '',
+        'hotkey':   'v',
         'text':     'Navigation Channel'
     },
     {
@@ -104,28 +104,48 @@ LABELS = (
         },
         'item':     'items.items.LabeledRectItem',
         'inserter': 'sloth.items.RectItemInserter',
-        'hotkey':   '',
+        'hotkey':   't',
         'text':     'Torpedo Target'
     },
     {
         'attributes': {
             'type':       'rect',
-            'class':      'torpedo_hole',
+            'class':      'hexagon',
         },
         'item':     'items.items.LabeledRectItem',
         'inserter': 'sloth.items.RectItemInserter',
-        'hotkey':   '',
-        'text':     'Torpedo Hole'
+        'hotkey':   'h',
+        'text':     'Hexagon'
     },
     {
         'attributes': {
             'type':       'rect',
-            'class':      'torpedo_cover',
+            'class':      'pickup_plat',
         },
         'item':     'items.items.LabeledRectItem',
         'inserter': 'sloth.items.RectItemInserter',
-        'hotkey':   '',
-        'text':     'Torpedo Cover'
+        'hotkey':   ',',
+        'text':     ' Object pickup platform'
+    },
+    {
+        'attributes': {
+            'type':       'rect',
+            'class':      'dropoff_plat',
+        },
+        'item':     'items.items.LabeledRectItem',
+        'inserter': 'sloth.items.RectItemInserter',
+        'hotkey':   '.',
+        'text':     'Object dropoff platform'
+    },
+    {
+        'attributes': {
+            'type':       'rect',
+            'class':      'marker_dropoff_plat',
+        },
+        'item':     'items.items.LabeledRectItem',
+        'inserter': 'sloth.items.RectItemInserter',
+        'hotkey':   'm',
+        'text':     'Marker drop platform'
     }
 )
 
@@ -135,7 +155,7 @@ LABELS = (
 # with at least 2 entries, where the first entry is the hotkey (sequence),
 # and the second entry is the function that is called.  The function
 # should expect a single parameter, the labeltool object.  The optional
-# third entry -- if present -- is expected to be a string describing the 
+# third entry -- if present -- is expected to be a string describing the
 # action.
 HOTKEYS = (
     ('Space',     [lambda lt: lt.currentImage().confirmAll(),
@@ -184,9 +204,8 @@ CONTAINERS = (
 # PLUGINS
 #
 # A list/tuple of classes implementing the sloth plugin interface.  The
-# classes can either be given directly or their module path be specified 
+# classes can either be given directly or their module path be specified
 # as string.
 PLUGINS = (
     ('plugins.label_remover.LabelRemoverPlugin',)
 )
-
