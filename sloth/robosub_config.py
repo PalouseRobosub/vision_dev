@@ -90,12 +90,22 @@ LABELS = (
     {
         'attributes': {
             'type':       'rect',
-            'class':      'navigation_channel',
+            'class':      'nav_channel_post',
         },
         'item':     'items.items.LabeledRectItem',
         'inserter': 'sloth.items.RectItemInserter',
-        'hotkey':   'v',
-        'text':     'Navigation Channel'
+        'hotkey':   'z',
+        'text':     'Navigation Channel Post'
+    },
+    {
+        'attributes': {
+            'type':       'rect',
+            'class':      'nav_channel_bar',
+        },
+        'item':     'items.items.LabeledRectItem',
+        'inserter': 'sloth.items.RectItemInserter',
+        'hotkey':   'x',
+        'text':     'Navigation Channel Bar'
     },
     {
         'attributes': {
