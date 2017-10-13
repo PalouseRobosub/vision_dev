@@ -8,26 +8,29 @@ from skimage import img_as_ubyte
 
 import json
 
-
+# Reads a input file path and uses a color filter to create a binary mask
 def create_mask(file_path):
 	yellow = np.uint8([[[0, 255, 255]]])
+	# convert a BGR value of yellow to HSV
 	hsv_yellow = cv2.cvtColor(yellow,cv2.COLOR_BGR2HSV)
 
+	# Have a threshold of +/- 10 for yellow threshold
 	lower_yellow = hsv_yellow - np.array([10, 200, 200])
 	upper_yellow = hsv_yellow + np.array([10, 0, 0])
 	# print(hsv_yellow, lower_yellow, upper_yellow)
 
 
-	# Load an color image in grayscale
+	# Load an color image
 	img = cv2.imread(file_path)
 	res = cv2.resize(img,None,fx=0.5, fy=0.5, interpolation = cv2.INTER_CUBIC)
 	# Convert BGR to HSV
 	hsv = cv2.cvtColor(res, cv2.COLOR_BGR2HSV)
-	# Threshold the HSV image to get only blue colors
+	# Threshold the HSV image to get only yellow colors
 	mask = cv2.inRange(hsv, lower_yellow, upper_yellow)
 	# Bitwise-AND mask and original image
 	res1 = cv2.bitwise_and(res,res, mask= mask)
 
+	# Convert a 0,255 image to 0,1 binary image
 	mask[mask>200] = 1
 	# mask1 = skeletonize(mask)
 	# mask1[mask1==1] = 255
@@ -35,6 +38,7 @@ def create_mask(file_path):
 	return res, mask
 
 
+# Try getting a rectangle box for boundary for a horizontal bar given the mask
 def get_rectangle(mask):
 
 	hor_sum = np.sum(mask, axis=1)
@@ -87,6 +91,9 @@ def get_rectangle(mask):
 	else:
 		return 0, 0, 0, 0
 
+# Using the get rectangle function, the below function calls it thrice to get the three bars
+# It checks if there is a horizontal rod. If yes then it splits the images into two vertical images
+# Passes a 90 degree rotated (transposed) image to identify the vertical poles as two horizontal poles
 def get_three_rectangles(mask):
 	box_array = []
 	x,y,x1,y1 = get_rectangle(mask)
@@ -123,6 +130,11 @@ def get_three_rectangles(mask):
 	print(box_array)
 	return box_array
 
+# Takes a mask, finds all the different contours. For each contour create a mask.
+# Pass the mask to check whether they have the Navigation channel gate.
+# It uses a basic threshold to identify the biggest of contour and ignore smaller blobs
+# Also, if the detect rectangle returns a empty array, it says it is not a valid channel
+# It keeps going until either all contours are validated or it finds one navigation channel gate
 def using_contour(mask):
 	output = cv2.findContours(np.copy(mask), cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 	im2, contours, hierarchy = output
@@ -151,6 +163,8 @@ def using_contour(mask):
 
 			# cv2.imshow('new_mask',255*new_mask)
 	return mask, []
+
+# Takes a list of all the input files and runs the segmentation for each file
 def run_for_all_inputs(input_list):
 	box_results = {}
 	for file_path in input_list:
@@ -163,6 +177,7 @@ def run_for_all_inputs(input_list):
 		box_results[file_name] = box_array
 	return box_results
 
+# Takes all the box results, dumps the output as a json in the necessary file
 def generate_json(box_results, filename):
 	box_results_json = []
 	for key, box_array in box_results.iteritems():
@@ -190,6 +205,8 @@ def generate_json(box_results, filename):
 			sort_keys=True, indent=4, separators=(',', ': '))
 	return box_results_json
 
+# Using the box results information, reads all the input images and dumps
+# the boxed images. The images are resized and dumps as JPEG so that the file size is reduced
 def dump_output_images(box_results, input_base, output_base):
 
 	for filename, box_array in box_results.iteritems():
@@ -211,50 +228,60 @@ def dump_output_images(box_results, input_base, output_base):
 
 
 	return
-BASE_PATH = "../../../data/robosub/channel_sub_000/"
-BASE_PATH = "../../../data/robosub/channel_sub_001/"
-# BASE_PATH = "../../../data/robosub/channel_sub_000_error/"
-# BASE_PATH = "../../../data/robosub/channel_sub_001_error/"
 
-BASE_PATH_OP = "../../../data/robosub/channel_sub_000_OP/"
-BASE_PATH_OP = "../../../data/robosub/channel_sub_001_OP/"
-# BASE_PATH_OP = "../../../data/robosub/channel_sub_000_error_OP/"
-# BASE_PATH_OP = "../../../data/robosub/channel_sub_001_error_OP/"
+# Edit the below variables:
+# BASE_PATH: Path of the input folder containing all the input images
+# BASE_PATH_OP: Path of the output folder to dump the JSON and the boxed image files
+# The images are downsampled and rectangles are detected on it and then scaled by 2
 
-#left_318.575000.png"
-#left_296.175000.png"
-#left_322.575000.png"
-#left_322.375000.png" 
-#left_294.975000.png"
-input_list = [
-"../../../data/robosub/channel_sub_001/left_322.575000.png",
-"../../../data/robosub/channel_sub_001/left_296.175000.png",
-"../../../data/robosub/channel_sub_001/left_318.575000.png",
-"../../../data/robosub/channel_sub_001/left_322.375000.png",
-"../../../data/robosub/channel_sub_001/left_294.975000.png"
-]
-input_list = []
-for file in os.listdir(BASE_PATH):
-    if file.endswith(".png"):
-        # print(os.path.join(BASE_PATH, file))
-        input_list.append(os.path.join(BASE_PATH, file))
-print(len(input_list))
-box_results = run_for_all_inputs(input_list)
-# print(box_results)
-generate_json(box_results, os.path.join(BASE_PATH_OP, "output.json"))
-dump_output_images(box_results,BASE_PATH, BASE_PATH_OP)
-#run_for_all_inputs(input_list[200:210])
-#run_for_all_inputs(input_list[100:110])
+if __name__ == '__main__':
+	BASE_PATH = "../../../data/robosub/channel_sub_000/"
+	BASE_PATH = "../../../data/robosub/channel_sub_001/"
+	# BASE_PATH = "../../../data/robosub/channel_sub_000_error/"
+	# BASE_PATH = "../../../data/robosub/channel_sub_001_error/"
 
-# cv2.imshow('frame',res)
-#cv2.imshow('mask',mask)
-#cv2.imshow('mask1',mask1)
-# while(1):
-# 	k = cv2.waitKey(5) & 0xFF
-# 	if k == 27:
-# 	    break
-# cv2.destroyAllWindows()
+	BASE_PATH_OP = "../../../data/robosub/channel_sub_000_OP/"
+	BASE_PATH_OP = "../../../data/robosub/channel_sub_001_OP/"
+	# BASE_PATH_OP = "../../../data/robosub/channel_sub_000_error_OP/"
+	# BASE_PATH_OP = "../../../data/robosub/channel_sub_001_error_OP/"
 
+	#left_318.575000.png"
+	#left_296.175000.png"
+	#left_322.575000.png"
+	#left_322.375000.png" 
+	#left_294.975000.png"
+	# input_list = [
+	# "../../../data/robosub/channel_sub_001/left_322.575000.png",
+	# "../../../data/robosub/channel_sub_001/left_296.175000.png",
+	# "../../../data/robosub/channel_sub_001/left_318.575000.png",
+	# "../../../data/robosub/channel_sub_001/left_322.375000.png",
+	# "../../../data/robosub/channel_sub_001/left_294.975000.png"
+	# ]
+	input_list = []
+	for file in os.listdir(BASE_PATH):
+	    if file.endswith(".png"):
+	        # print(os.path.join(BASE_PATH, file))
+	        input_list.append(os.path.join(BASE_PATH, file))
+	print(len(input_list))
+	box_results = run_for_all_inputs(input_list)
+	# print(box_results)
+	generate_json(box_results, os.path.join(BASE_PATH_OP, "output.json"))
+	dump_output_images(box_results,BASE_PATH, BASE_PATH_OP)
+	#run_for_all_inputs(input_list[200:210])
+	#run_for_all_inputs(input_list[100:110])
+
+	# cv2.imshow('frame',res)
+	#cv2.imshow('mask',mask)
+	#cv2.imshow('mask1',mask1)
+	# while(1):
+	# 	k = cv2.waitKey(5) & 0xFF
+	# 	if k == 27:
+	# 	    break
+	# cv2.destroyAllWindows()
+
+#####################################################################################
+# Ignore all the functions below. They were used to evaluate different algorithms
+#####################################################################################
 
 def using_ver_hist():
 	non_zero_hor = np.where(hor_sum > 30)
@@ -294,6 +321,9 @@ def using_ver_hist():
 				(rightverrod_right,verrod_bot),(0,255,0),2)
 	return
 
+#####################################################################################
+# Ignore all the functions below. They were used to evaluate different algorithms
+#####################################################################################
 
 def the_contour_idea():
 	output = cv2.findContours(mask,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
