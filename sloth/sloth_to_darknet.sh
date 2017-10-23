@@ -1,3 +1,8 @@
+# This script runs 
+# "sloth convert -c stuff/json"
+# and then runs 
+# "./sloth_to_darknet.py
+
 json=${1}
 output=${2}
 
