@@ -178,7 +178,7 @@ HOTKEYS = (
     ('Tab',       lambda lt: lt.selectNextAnnotation(),      'Select next annotation'),
     ('Shift+Tab', lambda lt: lt.selectPreviousAnnotation(),  'Select previous annotation'),
     ('Ctrl+f',    lambda lt: lt.view().fitInView(),          'Fit current image/frame into window'),
-    ('Del',       lambda lt: lt.deleteSelectedAnnotations(), 'Delete selected annotations'),
+    ('d',       lambda lt: lt.deleteSelectedAnnotations(), 'Delete selected annotations'),
     ('Ctrl+Shift+Del', [lambda lt: lt.selectAllAnnotations(),
                    lambda lt: lt.deleteSelectedAnnotations(),
                    lambda lt: lt.currentImage().setUnlabeled(True)],'Delete all annotations on this image and mark it as unlabeled'),
