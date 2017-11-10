@@ -10,7 +10,7 @@
 #   you can run ./download_data.sh initial/red_buoy_sub_00 0 1 3
 
 
-BASE_URL='http://robosub-vm.eecs.wsu.edu/data/2018/vision/labeling/labeling_todo'
+BASE_URL='http://robosub-vm.eecs.wsu.edu/data/vision/labeling/labeling_todo/current'
 SUB_PATH=$1
 
 if [ "$SUB_PATH" == "" ] ; then
@@ -35,5 +35,3 @@ echo "extracting tarballs"
 for i in ./*.tar ; do
     tar -xf $i
 done
-
-
