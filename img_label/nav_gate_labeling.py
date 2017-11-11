@@ -239,11 +239,13 @@ if __name__ == '__main__':
 	BASE_PATH = "../../../data/robosub/channel_sub_001/"
 	# BASE_PATH = "../../../data/robosub/channel_sub_000_error/"
 	# BASE_PATH = "../../../data/robosub/channel_sub_001_error/"
+	BASE_PATH = "../../../../data/robosub/pool_test/images_sub_001"
 
 	BASE_PATH_OP = "../../../data/robosub/channel_sub_000_OP/"
 	BASE_PATH_OP = "../../../data/robosub/channel_sub_001_OP/"
 	# BASE_PATH_OP = "../../../data/robosub/channel_sub_000_error_OP/"
 	# BASE_PATH_OP = "../../../data/robosub/channel_sub_001_error_OP/"
+	BASE_PATH_OP = "../../../../data/robosub/pool_test/images_sub_001_OP"
 
 	#left_318.575000.png"
 	#left_296.175000.png"
