@@ -5,7 +5,6 @@ import json
 import operator
 import sys
 import os
-import photoshow
 import logging
 
 def annotation_class_to_color(annotation_name):
@@ -31,7 +30,6 @@ class PhotoShow:
     def __init__(self, img_name):
         self.img = cv2.imread(img_name)
         self.file_name = img_name
-        self.draw_annotations()
 
 
     def draw_annotations(self, annotations, alpha=0.2, scale=0.7):
@@ -126,12 +124,13 @@ if __name__ == '__main__':
         """
         if args.noshow is False:
             try:
-                current_img = photoshow.PhotoShow(annotation['filename'])
-                current_img.draw_annotations(annotation['annotations'])
+                current_img = PhotoShow(annotation['filename'])
             except:
                 logging.warning('Failed to show annotation for {}.'.format(annotation['filename']))
                 i = i + 1
                 continue
+
+            current_img.draw_annotations(annotation['annotations'])
 
             status = current_img.display()
             if status == 'b':
