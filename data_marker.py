@@ -130,7 +130,7 @@ if __name__ == '__main__':
                 i = i + 1
                 continue
 
-            current_img.draw_annotations(annotation['annotations'])
+            current_img.draw_annotations(annotation['annotations'], alpha=0.1)
 
             status = current_img.display()
             if status == 'b':
