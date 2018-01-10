@@ -135,26 +135,29 @@ class DarknetContainer(AnnotationContainer):
             print("Wrote class labels")
             # Write each file's annotations
             for an in annotations:
-                f.write(">> \"" + an['filename'] + "\"\n")
-                print("Using parent Dir: {}".format(parentDir))
-                print("Getting image size of: {}".format(an["filename"]))
-                path = parentDir + an['filename']
-                size = self.get_image_size(path)
-                print("Size: {}".format(size))
-                for label in an['annotations']:
-                    print("Adding label: {}".format(label))
-                    dw = 1.0/size[0]
-                    dh = 1.0/size[1]
-                    x = (label['width'] / 2.0) + label['x']
-                    y = (label['height'] / 2.0) + label['y']
-                    x = x * dw
-                    w = label['width'] * dw
-                    y = y * dh
-                    h = label['height'] * dh
-                    print("Writing label to file")
-                    f.write("{} {} {} {} {}\n".format(labels.index(label['class']), x, y, w, h))
-                    print("Wrote to file")
-                f.write("<<\n")
+                if an['status'] == "Bad":
+                    print "Annotation marked bad. Skipping."
+                else:
+                    f.write(">> \"" + an['filename'] + "\"\n")
+                    print("Using parent Dir: {}".format(parentDir))
+                    print("Getting image size of: {}".format(an["filename"]))
+                    path = parentDir + an['filename']
+                    size = self.get_image_size(path)
+                    print("Size: {}".format(size))
+                    for label in an['annotations']:
+                        print("Adding label: {}".format(label))
+                        dw = 1.0/size[0]
+                        dh = 1.0/size[1]
+                        x = (label['width'] / 2.0) + label['x']
+                        y = (label['height'] / 2.0) + label['y']
+                        x = x * dw
+                        w = label['width'] * dw
+                        y = y * dh
+                        h = label['height'] * dh
+                        print("Writing label to file")
+                        f.write("{} {} {} {} {}\n".format(labels.index(label['class']), x, y, w, h))
+                        print("Wrote to file")
+                    f.write("<<\n")
             print("Wrote annotations")
         print("Finished writing")
         return
