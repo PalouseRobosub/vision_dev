@@ -156,6 +156,67 @@ LABELS = (
         'inserter': 'sloth.items.RectItemInserter',
         'hotkey':   'm',
         'text':     'Marker drop platform'
+    },
+        # Items below are new labels for the new rules.
+    {
+        'attributes': {
+            'type':       'die1',
+            'class':      'die_1',
+        },
+        'item':     'items.items.LabeledRectItem',
+        'inserter': 'sloth.items.RectItemInserter',
+        'hotkey':   '1',
+        'text':     'die one'
+    },
+    {
+        'attributes': {
+            'type':       'die2',
+            'class':      'die_2',
+        },
+        'item':     'items.items.LabeledRectItem',
+        'inserter': 'sloth.items.RectItemInserter',
+        'hotkey':   '2',
+        'text':     'die two'
+    },
+    {
+        'attributes': {
+            'type':       'die3',
+            'class':      'die_3',
+        },
+        'item':     'items.items.LabeledRectItem',
+        'inserter': 'sloth.items.RectItemInserter',
+        'hotkey':   '3',
+        'text':     'die three'
+    },
+    {
+        'attributes': {
+            'type':       'die4',
+            'class':      'die_4',
+        },
+        'item':     'items.items.LabeledRectItem',
+        'inserter': 'sloth.items.RectItemInserter',
+        'hotkey':   '4',
+        'text':     'die four'
+    },
+    {
+        'attributes': {
+            'type':       'die5',
+            'class':      'die_5',
+        },
+        'item':     'items.items.LabeledRectItem',
+        'inserter': 'sloth.items.RectItemInserter',
+        'hotkey':   '5',
+        'text':     'die five'
+    },
+    {
+        'attributes': {
+            'type':       'die6',
+            'class':      'die_6',
+        },
+        'item':     'items.items.LabeledRectItem',
+        'inserter': 'sloth.items.RectItemInserter',
+        'hotkey':   '6',
+        'text':     'die six'
     }
 )
 
