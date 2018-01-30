@@ -217,7 +217,17 @@ LABELS = (
         'inserter': 'sloth.items.RectItemInserter',
         'hotkey':   '6',
         'text':     'die six'
-    }
+    },
+    {
+        'attributes': {
+            'type':       'roulette',
+            'class':      'roulette_sector',
+        },
+        'item':     'items.items.LabeledRectItem',
+        'inserter': 'sloth.items.RectItemInserter',
+        'hotkey':   'g',
+        'text':     'roulette green sector'
+    },
 )
 
 # HOTKEYS
