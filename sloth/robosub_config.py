@@ -39,36 +39,6 @@ from sloth.annotations.model import CopyAnnotations
 LABELS = (
     {
         'attributes': {
-            'type': 'rect',
-            'class':      'red_buoy',
-        },
-        'inserter': 'sloth.items.RectItemInserter',
-        'item':     'items.items.LabeledRectItem',
-        'hotkey':   'r',
-        'text':     'Red Buoy',
-    },
-    {
-        'attributes': {
-            'type': 'rect',
-            'class':      'yellow_buoy',
-        },
-        'inserter': 'sloth.items.RectItemInserter',
-        'item':     'items.items.LabeledRectItem',
-        'hotkey':   'y',
-        'text':     'Yellow Buoy',
-    },
-    {
-        'attributes': {
-            'type': 'rect',
-            'class':      'green_buoy',
-        },
-        'inserter': 'sloth.items.RectItemInserter',
-        'item':     'items.items.LabeledRectItem',
-        'hotkey':   'g',
-        'text':     'Green Buoy',
-    },
-    {
-        'attributes': {
             'type':       'rect',
             'class':      'start_gate_post',
         },
@@ -90,72 +60,12 @@ LABELS = (
     {
         'attributes': {
             'type':       'rect',
-            'class':      'nav_channel_post',
-        },
-        'item':     'items.items.LabeledRectItem',
-        'inserter': 'sloth.items.RectItemInserter',
-        'hotkey':   'z',
-        'text':     'Navigation Channel Post'
-    },
-    {
-        'attributes': {
-            'type':       'rect',
-            'class':      'nav_channel_bar',
-        },
-        'item':     'items.items.LabeledRectItem',
-        'inserter': 'sloth.items.RectItemInserter',
-        'hotkey':   'x',
-        'text':     'Navigation Channel Bar'
-    },
-    {
-        'attributes': {
-            'type':       'rect',
             'class':      'torpedo_target',
         },
         'item':     'items.items.LabeledRectItem',
         'inserter': 'sloth.items.RectItemInserter',
         'hotkey':   't',
         'text':     'Torpedo Target'
-    },
-    {
-        'attributes': {
-            'type':       'rect',
-            'class':      'hexagon',
-        },
-        'item':     'items.items.LabeledRectItem',
-        'inserter': 'sloth.items.RectItemInserter',
-        'hotkey':   'h',
-        'text':     'Hexagon'
-    },
-    {
-        'attributes': {
-            'type':       'rect',
-            'class':      'pickup_plat',
-        },
-        'item':     'items.items.LabeledRectItem',
-        'inserter': 'sloth.items.RectItemInserter',
-        'hotkey':   ',',
-        'text':     'Object pickup platform'
-    },
-    {
-        'attributes': {
-            'type':       'rect',
-            'class':      'dropoff_plat',
-        },
-        'item':     'items.items.LabeledRectItem',
-        'inserter': 'sloth.items.RectItemInserter',
-        'hotkey':   '.',
-        'text':     'Object dropoff platform'
-    },
-    {
-        'attributes': {
-            'type':       'rect',
-            'class':      'marker_dropoff_plat',
-        },
-        'item':     'items.items.LabeledRectItem',
-        'inserter': 'sloth.items.RectItemInserter',
-        'hotkey':   'm',
-        'text':     'Marker drop platform'
     },
         # Items below are new labels for the new rules.
     {
