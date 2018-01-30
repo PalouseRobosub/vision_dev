@@ -39,36 +39,6 @@ from sloth.annotations.model import CopyAnnotations
 LABELS = (
     {
         'attributes': {
-            'type': 'rect',
-            'class':      'red_buoy',
-        },
-        'inserter': 'sloth.items.RectItemInserter',
-        'item':     'items.items.LabeledRectItem',
-        'hotkey':   'r',
-        'text':     'Red Buoy',
-    },
-    {
-        'attributes': {
-            'type': 'rect',
-            'class':      'yellow_buoy',
-        },
-        'inserter': 'sloth.items.RectItemInserter',
-        'item':     'items.items.LabeledRectItem',
-        'hotkey':   'y',
-        'text':     'Yellow Buoy',
-    },
-    {
-        'attributes': {
-            'type': 'rect',
-            'class':      'green_buoy',
-        },
-        'inserter': 'sloth.items.RectItemInserter',
-        'item':     'items.items.LabeledRectItem',
-        'hotkey':   'g',
-        'text':     'Green Buoy',
-    },
-    {
-        'attributes': {
             'type':       'rect',
             'class':      'start_gate_post',
         },
@@ -90,26 +60,6 @@ LABELS = (
     {
         'attributes': {
             'type':       'rect',
-            'class':      'nav_channel_post',
-        },
-        'item':     'items.items.LabeledRectItem',
-        'inserter': 'sloth.items.RectItemInserter',
-        'hotkey':   'z',
-        'text':     'Navigation Channel Post'
-    },
-    {
-        'attributes': {
-            'type':       'rect',
-            'class':      'nav_channel_bar',
-        },
-        'item':     'items.items.LabeledRectItem',
-        'inserter': 'sloth.items.RectItemInserter',
-        'hotkey':   'x',
-        'text':     'Navigation Channel Bar'
-    },
-    {
-        'attributes': {
-            'type':       'rect',
             'class':      'torpedo_target',
         },
         'item':     'items.items.LabeledRectItem',
@@ -117,46 +67,77 @@ LABELS = (
         'hotkey':   't',
         'text':     'Torpedo Target'
     },
+        # Items below are new labels for the new rules.
     {
         'attributes': {
-            'type':       'rect',
-            'class':      'hexagon',
+            'type':       'die1',
+            'class':      'die_1',
         },
         'item':     'items.items.LabeledRectItem',
         'inserter': 'sloth.items.RectItemInserter',
-        'hotkey':   'h',
-        'text':     'Hexagon'
+        'hotkey':   '1',
+        'text':     'die one'
     },
     {
         'attributes': {
-            'type':       'rect',
-            'class':      'pickup_plat',
+            'type':       'die2',
+            'class':      'die_2',
         },
         'item':     'items.items.LabeledRectItem',
         'inserter': 'sloth.items.RectItemInserter',
-        'hotkey':   ',',
-        'text':     'Object pickup platform'
+        'hotkey':   '2',
+        'text':     'die two'
     },
     {
         'attributes': {
-            'type':       'rect',
-            'class':      'dropoff_plat',
+            'type':       'die3',
+            'class':      'die_3',
         },
         'item':     'items.items.LabeledRectItem',
         'inserter': 'sloth.items.RectItemInserter',
-        'hotkey':   '.',
-        'text':     'Object dropoff platform'
+        'hotkey':   '3',
+        'text':     'die three'
     },
     {
         'attributes': {
-            'type':       'rect',
-            'class':      'marker_dropoff_plat',
+            'type':       'die4',
+            'class':      'die_4',
         },
         'item':     'items.items.LabeledRectItem',
         'inserter': 'sloth.items.RectItemInserter',
-        'hotkey':   'm',
-        'text':     'Marker drop platform'
-    }
+        'hotkey':   '4',
+        'text':     'die four'
+    },
+    {
+        'attributes': {
+            'type':       'die5',
+            'class':      'die_5',
+        },
+        'item':     'items.items.LabeledRectItem',
+        'inserter': 'sloth.items.RectItemInserter',
+        'hotkey':   '5',
+        'text':     'die five'
+    },
+    {
+        'attributes': {
+            'type':       'die6',
+            'class':      'die_6',
+        },
+        'item':     'items.items.LabeledRectItem',
+        'inserter': 'sloth.items.RectItemInserter',
+        'hotkey':   '6',
+        'text':     'die six'
+    },
+    {
+        'attributes': {
+            'type':       'roulette',
+            'class':      'roulette_sector',
+        },
+        'item':     'items.items.LabeledRectItem',
+        'inserter': 'sloth.items.RectItemInserter',
+        'hotkey':   'g',
+        'text':     'roulette green sector'
+    },
 )
 
 # HOTKEYS
