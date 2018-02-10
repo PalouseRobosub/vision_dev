@@ -8,17 +8,17 @@ import os
 import logging
 
 def annotation_class_to_color(annotation_name):
-    if annotation_name == 'nav_channel_post':
+    if annotation_name == 'die_1':
         return (255, 81, 255)
-    elif annotation_name == 'nav_channel_bar':
+    elif annotation_name == 'die_2':
         return (204, 0, 102)
-    elif annotation_name == 'red_buoy':
+    elif annotation_name == 'die_3':
         return (0, 0, 255)
-    elif annotation_name == 'green_buoy':
+    elif annotation_name == 'die_4':
         return (0, 255, 0)
-    elif annotation_name == 'yellow_buoy':
+    elif annotation_name == 'die_5':
         return (0, 255, 255)
-    elif annotation_name == 'path_marker':
+    elif annotation_name == 'die_6':
         return (102, 0, 204)
     elif annotation_name == 'start_gate_post':
         return (0, 102, 255)
@@ -32,21 +32,18 @@ class PhotoShow:
         self.file_name = img_name
 
 
-    def draw_annotations(self, annotations, alpha=0.2, scale=0.7):
+    def draw_annotations(self, annotations, alpha=0.35, scale=0.6):
         self.annotations = annotations
         for annotation in self.annotations:
-            if annotation['type'] != 'rect':
-                logging.warning('Encountered non-rectangular annotation: {} for file {}', annotation, self.file_name)
-            else:
-                color = annotation_class_to_color(annotation['class'])
-                origin = (int(annotation['x']), int(annotation['y']))
-                end = tuple(map(operator.add, origin, (int(annotation['width']), int(annotation['height']))))
+            color = annotation_class_to_color(annotation['class'])
+            origin = (int(annotation['x']), int(annotation['y']))
+            end = tuple(map(operator.add, origin, (int(annotation['width']), int(annotation['height']))))
 
-                overlay = self.img.copy()
-                cv2.rectangle(overlay, origin, end, color, -1)
-                self.img = cv2.addWeighted(self.img, 1 - alpha, overlay, alpha, 0)
+            overlay = self.img.copy()
+            cv2.rectangle(overlay, origin, end, color, -1)
+            self.img = cv2.addWeighted(self.img, 1 - alpha, overlay, alpha, 0)
 
-                cv2.putText(self.img, annotation['class'], origin, cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
+            cv2.putText(self.img, annotation['class'], origin, cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
 
         self.img_small = cv2.resize(self.img, (0,0), fx=scale, fy=scale)
 
@@ -69,6 +66,7 @@ if __name__ == '__main__':
     parser.add_argument('--count', help='Only count images with \'Good\' as the status and with the specified label.', action='store_true')
     parser.add_argument('--noshow', action='store_true', help='Do not show any images.')
     parser.add_argument('--beginning', action='store_true', help='Start at the beginning of the images.')
+    parser.add_argument('--showgood', action='store_true', help='Only show good labels.')
 
     args = parser.parse_args()
 
@@ -130,18 +128,19 @@ if __name__ == '__main__':
                 i = i + 1
                 continue
 
-            current_img.draw_annotations(annotation['annotations'], alpha=0.1)
+            current_img.draw_annotations(annotation['annotations'], alpha=0.2)
 
-            status = current_img.display()
-            if status == 'b':
-                print '{}'.format(annotation['filename'])
-                annotations[i]['status'] = 'Bad'
-            elif status == 'a':
-                i -= 2
-            elif status == 'e':
-                break
-            elif status != 's':
-                annotations[i]['status'] = 'Good'
+            if args.showgood == False or annotation['status'] == 'Good':
+                status = current_img.display()
+                if status == 'b':
+                    print '{}'.format(annotation['filename'])
+                    annotations[i]['status'] = 'Bad'
+                elif status == 'a':
+                    i -= 2
+                elif status == 'e':
+                    break
+                elif status != 's':
+                    annotations[i]['status'] = 'Good'
 
         """
         Count the image if it is labelled correctly and displayable.
@@ -158,6 +157,8 @@ if __name__ == '__main__':
         Increment the image index.
         """
         i = i + 1
+
+    print '{} / {} labels marked.'.format(i, len(annotations))
 
     """
     Display information about number of labels found matching the required
