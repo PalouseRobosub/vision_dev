@@ -114,15 +114,9 @@ class Node:
 
                 kept_indices.append(i)
 
-        print len(kept_indices)
-
         boxes = np.take(detections['detection_boxes'], kept_indices, axis=0)
         classes = np.take(detections['detection_classes'], kept_indices, axis=0)
         scores = np.take(detections['detection_scores'], kept_indices, axis=0)
-
-        print boxes
-        print classes
-        print scores
 
         # Draw the detections for the pretty publisher.
         if len(kept_indices) > 0:
