@@ -25,56 +25,33 @@ class Node:
         self.bridge = cv_bridge.CvBridge()
         self.min_score = 0.10
 
+        self.image_tensor = self.graph.get_tensor_by_name('image_tensor:0')
+        self.d_boxes = self.graph.get_tensor_by_name('detection_boxes:0')
+        self.d_scores = self.graph.get_tensor_by_name('detection_scores:0')
+        self.d_classes = self.graph.get_tensor_by_name('detection_classes:0')
+        self.num_d = self.graph.get_tensor_by_name('num_detections:0')
+
+
 
     def process_image(self, image):
-        # Get handles to input and output tensors
-        ops = self.graph.get_operations()
-        all_tensor_names = {output.name for op in ops for output in op.outputs}
-        tensor_dict = {}
-        for key in [
-            'num_detections', 'detection_boxes', 'detection_scores',
-            'detection_classes', 'detection_masks'
-        ]:
-            tensor_name = key + ':0'
-            if tensor_name in all_tensor_names:
-                tensor_dict[key] = self.graph.get_tensor_by_name(
-                  tensor_name)
-
-        if 'detection_masks' in tensor_dict:
-            # The following processing is only for single image
-            detection_boxes = tf.squeeze(tensor_dict['detection_boxes'], [0])
-            detection_masks = tf.squeeze(tensor_dict['detection_masks'], [0])
-            # Reframe is required to translate mask from box coordinates to image coordinates and fit the image size.
-            real_num_detection = tf.cast(tensor_dict['num_detections'][0], tf.int32)
-            detection_boxes = tf.slice(detection_boxes, [0, 0], [real_num_detection, -1])
-            detection_masks = tf.slice(detection_masks, [0, 0, 0], [real_num_detection, -1, -1])
-            detection_masks_reframed = utils_ops.reframe_box_masks_to_image_masks(
-                detection_masks, detection_boxes, image.shape[0], image.shape[1])
-            detection_masks_reframed = tf.cast(
-                tf.greater(detection_masks_reframed, 0.5), tf.uint8)
-            # Follow the convention by adding back the batch dimension
-            tensor_dict['detection_masks'] = tf.expand_dims(
-                detection_masks_reframed, 0)
-
-        image_tensor = self.graph.get_tensor_by_name('image_tensor:0')
 
         # Run inference
         print 'Running inference'
         start_time = rospy.get_time()
-        output_dict = self.session.run(tensor_dict,
-                               feed_dict={image_tensor: np.expand_dims(image, 0)})
+        (boxes, scores, classes, num) = self.session.run(
+                [self.d_boxes, self.d_scores, self.d_classes, self.num_d],
+                feed_dict={
+                    self.image_tensor: np.expand_dims(image, axis=0)
+                })
 
         print 'Done in {} seconds'.format(rospy.get_time() - start_time)
 
         # all outputs are float32 numpy arrays, so convert types as appropriate
-        output_dict['num_detections'] = int(output_dict['num_detections'][0])
-        output_dict['detection_classes'] = output_dict[
-            'detection_classes'][0].astype(np.uint8)
-        output_dict['detection_boxes'] = output_dict['detection_boxes'][0]
-        output_dict['detection_scores'] = output_dict['detection_scores'][0]
-
-        if 'detection_masks' in output_dict:
-            output_dict['detection_masks'] = output_dict['detection_masks'][0]
+        output_dict = dict()
+        output_dict['num_detections'] = int(num[0])
+        output_dict['detection_classes'] = [int(x) for x in classes[0]]
+        output_dict['detection_boxes'] = boxes[0]
+        output_dict['detection_scores'] = scores[0]
 
         return output_dict
 
@@ -82,7 +59,8 @@ class Node:
     def callback(self, img_msg):
         img = self.bridge.imgmsg_to_cv2(img_msg, 'bgr8')
 
-        detections = self.process_image(img)
+        with self.graph.as_default():
+            detections = self.process_image(img)
 
         # Remove overlapping detections.
         kept_indices = tf.image.non_max_suppression(
@@ -170,10 +148,10 @@ if __name__ == '__main__':
         graph_def.ParseFromString(serialized_graph)
         tf.import_graph_def(graph_def, name='')
 
-        # Construct the node and begin the pub/sub loops.
-        node = Node(camera, category_index, detection_graph)
+    # Construct the node and begin the pub/sub loops.
+    node = Node(camera, category_index, detection_graph)
 
-        rospy.spin()
+    rospy.spin()
 
-        # Release the TF session.
-        node.close()
+    # Release the TF session.
+    node.close()
