@@ -58,9 +58,10 @@ class Node:
 
     def callback(self, img_msg):
         img = self.bridge.imgmsg_to_cv2(img_msg, 'bgr8')
+        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
         with self.graph.as_default():
-            detections = self.process_image(img)
+            detections = self.process_image(img_rgb)
 
         # Remove overlapping detections.
         kept_indices = tf.image.non_max_suppression(
