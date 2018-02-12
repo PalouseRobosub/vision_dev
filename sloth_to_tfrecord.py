@@ -118,7 +118,7 @@ def extract_boxes(annotations, img_height, img_width, classes):
     for annotation in annotations:
         # tfrecord wants numerical index for class labels
         class_label = str(annotation['class'])
-        class_index = classes.index(class_label)
+        class_index = classes.index(class_label) + 1
         x = annotation['x']
         y = annotation['y']
         width = annotation['width']
@@ -211,6 +211,18 @@ def create_record(outfile, json_data, classes, input_path, progress):
         processed += 1
     return processed, skipped_not_good, skipped_not_found
 
+def clean_dataset(l):
+    tmplist = list()
+    skipped = 0
+
+    for entry in l:
+        if str(entry["status"]) == "Good" and \
+           len(entry['annotations']) > 0:
+           tmplist.append(entry)
+        else:
+            skipped += 1
+
+    return tmplist, skipped
 
 def _main(args):
     """Locate files for train and test sets and then generate TFRecords."""
@@ -223,6 +235,7 @@ def _main(args):
     label_path = os.path.join(output_path, 'label_map.pbtxt')
 
     json_data = json.load(open(args.input, 'r'))
+    json_data, skipped = clean_dataset(json_data)
 
     classes =  find_classes(json_data)
     print "Found the following classes:"
@@ -261,6 +274,7 @@ def _main(args):
     print "{} images successfuly processed".format(processed1+processed2)
     print "{} images skipped for not being marked good".format(
             skipped_not_good1+skipped_not_good2)
+    print "{} images skipped".format(skipped)
     print "{} images not found".format(skipped_not_found1+skipped_not_found2)
 
 if __name__ == '__main__':
