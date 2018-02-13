@@ -2,6 +2,12 @@
 # This program will check if there are any tars on the server and fetch one.
 # for use run just ./get_bag.sh
 
+# Help flag
+if [ "$1" == "-h" ]; then
+    echo -n "run get_bag.sh to get bags"
+    exit
+fi
+
 # prompt for login information
 echo -n "user: "
 read USER

@@ -4,6 +4,12 @@
 
 name=${1}
 
+# Help flag
+if [ "$1" == "-h" ]; then
+    echo -n "run upload_json.sh {json name}"
+    exit
+fi
+
 # check if name was given
 if [ "$1" == "" ]; then
     echo -n "Please name of .json file: "
