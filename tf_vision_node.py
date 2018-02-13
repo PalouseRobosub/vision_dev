@@ -5,7 +5,7 @@ import tensorflow as tf
 import rospy
 import cv_bridge
 
-from rs_yolo.msg import Detection, DetectionArray
+from robosub_msgs.msg import Detection, DetectionArray
 from sensor_msgs.msg import Image
 
 from object_detection.utils import ops as utils_ops
