@@ -259,7 +259,7 @@ def _main(args):
         create_record(train_path, training_data, classes,
                 os.path.dirname(input_path), progress)
     progress.finish()
-    print "Training data saved to {}.".format(train_path)
+    print "{} images saved to {}.".format(len(training_data), train_path)
 
     # Create the testing data
     progress = Bar('Creating testing data ', max=len(testing_data),
@@ -268,7 +268,7 @@ def _main(args):
     create_record(test_path, testing_data, classes,
             os.path.dirname(input_path), progress)
     progress.finish()
-    print "Testing data saved to {}.".format(test_path)
+    print "{} images saved to {}.".format(len(testing_data), test_path)
 
     # Print some file statistics
     print "{} images successfuly processed".format(processed1+processed2)
