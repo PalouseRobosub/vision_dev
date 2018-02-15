@@ -131,12 +131,12 @@ LABELS = (
     {
         'attributes': {
             'type':       'roulette',
-            'class':      'roulette_sector',
+            'class':      'roulette',
         },
         'item':     'items.items.LabeledRectItem',
         'inserter': 'sloth.items.RectItemInserter',
-        'hotkey':   'g',
-        'text':     'roulette green sector'
+        'hotkey':   'w',
+        'text':     'roulette wheel'
     },
 )
 
