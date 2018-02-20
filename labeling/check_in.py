@@ -5,11 +5,15 @@ import sys
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Check in Robosub image labels.')
-    parser.add_argument('password', type=str, help='The robosub SFTP password.')
     parser.add_argument('annotations', type=str, help='The annotations file to upload.')
     parser.add_argument('--validation', action='store_true')
 
     args = parser.parse_args()
+
+    pasword = os.environ.get('ROBOSUB_SFTP_PASSWORD')
+    if password is None:
+        print 'To suppress this prompt, please set the ROBOSUB_SFTP_PASSWORD environment variable.'
+        password = raw_input('Please enter the Robosub SFTP password: ')
 
     # Figure out the source and destination directory based upon input flag.
     if args.validation:
@@ -21,7 +25,7 @@ if __name__ == '__main__':
 
     with pysftp.Connection('robosub.eecs.wsu.edu',
                 username='sftp_user',
-                password=args.password,
+                password=password,
                 default_path='/data/vision/labeling') as sftp:
         with sftp.cd(src_dir):
             tars = [x for x in sftp.listdir() if x.endswith('.tar')]
@@ -41,5 +45,5 @@ if __name__ == '__main__':
 
         # Remove the ownership and annotation file.
         if args.validation:
-            sftp.remove('{}/{}'.format(src_dir, args.annotations))
+            sftp.remove('{}/{}'.format(src_dir, os.path.basename(args.annotations)))
         sftp.remove('{}/{}.owner'.format(src_dir, annotation_tar))
