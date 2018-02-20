@@ -89,4 +89,4 @@ if __name__ == '__main__':
     # Remove the tar file - We don't need it anymore.
     os.remove(tar)
 
-    print 'Images for available in {}'.format(tar_name)
+    print 'Images available in {}'.format(tar_name)
