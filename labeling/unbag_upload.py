@@ -12,8 +12,6 @@ import cv2
 import json
 
 
-import rospy
-
 def unbag_images(bag, directory):
     """ Unbags images into a directory.
 

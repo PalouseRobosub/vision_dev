@@ -4,6 +4,7 @@ import json
 import pysftp
 import tarfile
 import tempfile
+import sys
 import os
 
 if __name__ == '__main__':
