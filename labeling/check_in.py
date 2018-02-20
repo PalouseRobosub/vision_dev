@@ -10,7 +10,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    pasword = os.environ.get('ROBOSUB_SFTP_PASSWORD')
+    password = os.environ.get('ROBOSUB_SFTP_PASSWORD')
     if password is None:
         print 'To suppress this prompt, please set the ROBOSUB_SFTP_PASSWORD environment variable.'
         password = raw_input('Please enter the Robosub SFTP password: ')
