@@ -77,7 +77,7 @@ if __name__ == '__main__':
         else:
             # Generate labeling JSON for data to begin labeling.
             annotations = []
-            for f in glob.glob('{}/*.jpg'.format(tar_name)):
+            for f in sorted(glob.glob('{}/*.jpg'.format(tar_name))):
                 annotations.append({'annotations': [],
                                     'class': 'image',
                                     'filename': os.path.basename(f),
