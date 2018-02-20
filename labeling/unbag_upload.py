@@ -47,9 +47,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Unbags images and uploads them')
     parser.add_argument('bag_file', type=str, help='The bag file to upload')
     parser.add_argument('--files-per-tar', type=int, default=100, help='The number of images per tar archive')
-    parser.add_argument('--password', required=True, type=str, help='Password for Robosub SFTP')
 
     args = parser.parse_args()
+
+    pasword = os.environ.get('ROBOSUB_SFTP_PASSWORD')
+    if password is None:
+        print 'To suppress this prompt, please set the ROBOSUB_SFTP_PASSWORD environment variable.'
+        password = raw_input('Please enter the Robosub SFTP password: ')
 
     working_directory = tempfile.mkdtemp(dir='/tmp')
 
@@ -99,7 +103,7 @@ if __name__ == '__main__':
     bar_tar = progressbar.ProgressBar(max_value=len(glob.glob('{}/*.tar'.format(working_directory))))
     with pysftp.Connection('robosub.eecs.wsu.edu',
             username='sftp_user',
-            password=args.password,
+            password=password,
             default_path='/data/vision/labeling/new') as sftp:
         for i, f in enumerate(glob.glob('{}/*.tar'.format(working_directory))):
             bar_tar.update(i)

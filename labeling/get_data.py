@@ -8,10 +8,14 @@ import os
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Get data for labeling.')
-    parser.add_argument('password', type=str, help='The SFTP password for the server.')
     parser.add_argument('--validation', action='store_true')
 
     args = parser.parse_args()
+
+    pasword = os.environ.get('ROBOSUB_SFTP_PASSWORD')
+    if password is None:
+        print 'To suppress this prompt, please set the ROBOSUB_SFTP_PASSWORD environment variable.'
+        password = raw_input('Please enter the Robosub SFTP password: ')
 
     if args.validation:
         src_dir = 'unvalidated/'
@@ -27,7 +31,7 @@ if __name__ == '__main__':
 
     with pysftp.Connection('robosub.eecs.wsu.edu',
             username='sftp_user',
-            password=args.password,
+            password=password,
             default_path='/data/vision/labeling') as sftp:
         with sftp.cd(src_dir):
             tars = [x for x in sftp.listdir() if str(x).endswith('.tar')]
@@ -49,7 +53,7 @@ if __name__ == '__main__':
         owner_file = '{}.owner'.format(tar)
         temp_dir = tempfile.mkdtemp()
         with open('{}/{}'.format(temp_dir, owner_file), 'w') as f:
-            f.write(data_owner)
+            f.write(data_owner + '\n')
 
         with sftp.cd(dest_dir):
             sftp.put('{}/{}'.format(temp_dir, owner_file))

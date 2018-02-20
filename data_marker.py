@@ -89,6 +89,15 @@ if __name__ == '__main__':
                 i = j
                 break
 
+    print 'Keys: '
+    print ' a - Go back one image.'
+    print ' e/q - Exit the application.'
+    print ' s - Skip picture (Does not mark)'
+    print ' b - Marks an image as \'Bad\''
+    print ' Other - Marks an image as \'Good\''
+
+    annotation_path = os.path.dirname(args.annotation)
+
     """
     Loop through every image specified in the annotation file.
     """
@@ -122,7 +131,7 @@ if __name__ == '__main__':
         """
         if args.noshow is False:
             try:
-                current_img = PhotoShow(annotation['filename'])
+                current_img = PhotoShow(annotation_path + '/' + annotation['filename'])
             except:
                 logging.warning('Failed to show annotation for {}.'.format(annotation['filename']))
                 i = i + 1
@@ -137,7 +146,7 @@ if __name__ == '__main__':
                     annotations[i]['status'] = 'Bad'
                 elif status == 'a':
                     i -= 2
-                elif status == 'e':
+                elif status == 'e' or status == 'q':
                     break
                 elif status != 's':
                     annotations[i]['status'] = 'Good'
