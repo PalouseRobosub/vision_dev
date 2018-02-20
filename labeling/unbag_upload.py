@@ -65,7 +65,8 @@ if __name__ == '__main__':
     print 'Images unbagged to {}'.format(temp_dir)
 
     # Get a list of all the unbagged images.
-    images = glob.glob('{}/*.jpg'.format(temp_dir)).sort()
+    images = glob.glob('{}/*.jpg'.format(temp_dir))
+    images.sort()
 
     bag_base = os.path.splitext(os.path.basename(args.bag_file))[0]
 
