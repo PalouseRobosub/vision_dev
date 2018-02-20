@@ -84,14 +84,6 @@ if __name__ == '__main__':
         # directory for archiving.
         for img in images[i : end]:
             shutil.move(img, image_dir)
-            annotations.append({'annotations': [],
-                                'class': 'image',
-                                'filename': os.path.basename(img),
-                                'unlabeled': True})
-
-        # Create a sloth annotation file and dump the annotation data to it.
-        with open('{}/{}.json'.format(image_dir, os.path.basename(image_dir)), 'w') as f:
-            json.dump(annotations, f, indent=4)
 
         # Create an archive with the JSON annotation file and the images.
         with tarfile.TarFile('{}/{}.tar'.format(working_directory, os.path.basename(image_dir)), mode='w') as tf:
@@ -105,13 +97,14 @@ if __name__ == '__main__':
     # Upload the tar archives to the Robosub server using the PySFTP client.
     print 'Uploading archives to server...'
     bar_tar = progressbar.ProgressBar(max_value=len(glob.glob('{}/*.tar'.format(working_directory))))
-    with pysftp.Connection('robosub.eecs.wsu.edu', username='sftp_user', password=args.password) as sftp:
-        with sftp.cd('/data/vision/labeling/labeling_todo/current/'):
-            for i, f in enumerate(glob.glob('{}/*.tar'.format(working_directory))):
-                bar_tar.update(i)
-                sftp.put(f)
+    with pysftp.Connection('robosub.eecs.wsu.edu',
+            username='sftp_user',
+            password=args.password,
+            default_path='/data/vision/labeling/new') as sftp:
+        for i, f in enumerate(glob.glob('{}/*.tar'.format(working_directory))):
+            bar_tar.update(i)
+            sftp.put(f)
     bar_tar.finish()
 
     # Remove the temporary working directory we created.
     shutil.rmtree(working_directory)
-
