@@ -2,11 +2,13 @@ import argparse
 import pysftp
 import os
 import sys
+import shutil
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Check in Robosub image labels.')
     parser.add_argument('annotations', type=str, help='The annotations file to upload.')
     parser.add_argument('--validation', action='store_true')
+    parser.add_argument('--auto-delete', action='store_true')
 
     args = parser.parse_args()
 
@@ -47,3 +49,13 @@ if __name__ == '__main__':
         if args.validation:
             sftp.remove('{}/{}'.format(src_dir, os.path.basename(args.annotations)))
         sftp.remove('{}/{}.owner'.format(src_dir, annotation_tar))
+
+        if args.auto_delete:
+            delete = True
+        else:
+            user_input = raw_input('Delete folder `{}/`? (y/N): '.format(os.path.dirname(args.annotations)))
+            delete = user_input == 'y' or user_input == 'Y'
+
+        if delete:
+            shutil.rmtree(os.path.dirname(args.annotations))
+
