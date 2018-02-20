@@ -4,6 +4,20 @@ import tempfile
 import progressbar
 import tarfile
 import json
+import glob
+import shutil
+
+
+def move(src, dest):
+    print 'Moving {} -> {}'.format(src, dest)
+    for f in os.listdir(src):
+        f = src + '/' + f
+        if os.path.isfile(f):
+            if src != dest:
+                shutil.move(f, dest)
+        else:
+            move(f, dest)
+            os.rmdir(f)
 
 
 if __name__ == '__main__':
@@ -13,10 +27,10 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    files = glob.glob(directory)
+    files = glob.glob(args.directory + '/*')
 
     tarballs = [x for x in files if x.endswith('.tar')]
-    jsons = [x for x in files if x.endsiwth('.json')]
+    jsons = [x for x in files if x.endswith('.json')]
 
     tar_bases = [os.path.splitext(x)[0] for x in tarballs]
     json_bases = [os.path.splitext(x)[0] for x in jsons]
@@ -28,25 +42,29 @@ if __name__ == '__main__':
     print 'Combining tarballs...'
     bar = progressbar.ProgressBar(max_value=len(groups))
     annotations = []
-    for dataset in groups:
-        bar.next()
+    for i, dataset in enumerate(groups):
+        bar.update(i)
         json_fname = dataset + '.json'
         tar_fname = dataset + '.tar'
 
-        with tarfile.TarFile(tar_fname, 'r') as tf:
+        with tarfile.TarFile(tar_fname, mode='r') as tf:
             tf.extractall(working_directory)
 
         with open(json_fname, 'r') as f:
-            annotations.append(json.load(f))
+            annotations += json.load(f)
 
     bar.finish()
 
     with open('{}/labels.json'.format(working_directory), 'w') as f:
-        json.dump(annotations, f)
+        json.dump(annotations, f, indent=4)
 
-    with tarfile.TarFile(args.tarfile, 'w') as tf:
-        tf.add(working_directory, arcname=os.path.basename(working_directory))
+    # Flatten the tarfile directory structure
+    move(working_directory, working_directory)
+
+    print 'Writing final tarbal...'
+    with tarfile.TarFile(args.tarball, mode='w') as tf:
+        tf.add(working_directory, arcname='dataset')
 
     shutil.rmtree(working_directory)
 
-    print 'Tarfile saved to {}.'.format(working_directory)
+    print 'Tarfile saved to {}.'.format(args.tarball)
