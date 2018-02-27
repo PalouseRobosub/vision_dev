@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import argparse
 import pysftp
 import os
