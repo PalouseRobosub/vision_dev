@@ -8,17 +8,6 @@ import glob
 import shutil
 
 
-def move(src, dest):
-    print 'Moving {} -> {}'.format(src, dest)
-    for f in os.listdir(src):
-        f = src + '/' + f
-        if os.path.isfile(f):
-            if src != dest:
-                shutil.move(f, dest)
-        else:
-            move(f, dest)
-            os.rmdir(f)
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Collects multiple tarballs into a single dataset.')
@@ -51,17 +40,22 @@ if __name__ == '__main__':
             tf.extractall(working_directory)
 
         with open(json_fname, 'r') as f:
-            annotations += json.load(f)
+            new_annotations = json.load(f)
+
+        tar_dir = os.path.splitext(os.path.basename(tar_fname))[0]
+
+        for annotation in new_annotations:
+            fname = annotation['filename']
+            annotation['filename'] = tar_dir + '/' + fname
+
+        annotations += new_annotations
 
     bar.finish()
 
     with open('{}/labels.json'.format(working_directory), 'w') as f:
         json.dump(annotations, f, indent=4)
 
-    # Flatten the tarfile directory structure
-    move(working_directory, working_directory)
-
-    print 'Writing final tarbal...'
+    print 'Writing final tarball...'
     with tarfile.TarFile(args.tarball, mode='w') as tf:
         tf.add(working_directory, arcname='dataset')
 
