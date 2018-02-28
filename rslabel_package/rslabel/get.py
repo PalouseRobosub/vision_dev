@@ -119,7 +119,7 @@ def app(args):
                                         'filename': os.path.basename(f),
                                         'unlabeled': True})
 
-                with open('{}/{}.json'.format(tar_base, json_name), 'w') as f:
+                with open('{}/{}'.format(tar_base, json_name), 'w') as f:
                     json.dump(annotations, f, indent=4)
 
     # Remove the tar file - We don't need it anymore.

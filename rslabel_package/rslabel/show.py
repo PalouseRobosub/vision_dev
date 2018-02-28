@@ -8,6 +8,7 @@
 
 import json
 import os
+import progressbar
 import pysftp
 import shutil
 import sys
@@ -23,7 +24,10 @@ def get_json_stats(sftp):
     output_dictionary = dict()
 
     # Get information about each JSON in the directory.
-    for f in jsons:
+    print 'Grabbing JSON information...'
+    bar = progressbar.ProgressBar(max_value=len(jsons))
+    for i, f in enumerate(jsons):
+        bar.update(i)
         sftp.get(f, localpath='{}/{}'.format(working_directory, f))
         with open('{}/{}'.format(working_directory, f), 'r') as f:
             images = json.load(f)
@@ -42,6 +46,7 @@ def get_json_stats(sftp):
                 output_dictionary[label_type]['count'] += 1
                 if 'status' in image and image['status'] == 'Good':
                     output_dictionary[label_type]['good'] += 1
+    bar.finish()
 
     # Remove the temporary folder where the JSONs were stored.
     shutil.rmtree(working_directory)

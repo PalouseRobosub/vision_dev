@@ -58,10 +58,12 @@ def app(args):
             complete = True
             for annotation in json_contents:
                 try:
-                    complete = annotation['unlabeled'] != True
+                    complete = not annotation['unlabeled']
+                    if not complete:
+                        break
                 except:
-                    complete = False
-                    break
+                    pass
+
             src_dir = 'in_progress/labeling/'
             dest_dir = 'unvalidated/' if complete else 'new/'
         elif tar_name in validation_tars:
