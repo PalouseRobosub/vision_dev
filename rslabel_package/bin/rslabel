@@ -10,6 +10,7 @@ import argparse
 
 from rslabel import collect
 from rslabel import get
+from rslabel import show
 from rslabel import ret
 from rslabel import upload
 
@@ -31,6 +32,9 @@ if __name__ == '__main__':
     get_parser = sub_parsers.add_parser('get', description='Get a dataset for labeling or validation.')
     get_parser.add_argument('--validation', action='store_true')
     get_parser.set_defaults(func=get.app)
+
+    show_parser = sub_parsers.add_parser('show', description='Get stats about the image dataset.')
+    show_parser.set_defaults(func=show.app)
 
     upload_parser = sub_parsers.add_parser('upload', description='Split and upload a bag to the server.')
     upload_parser.add_argument('bag_file', type=str, help='The bag file to upload')
