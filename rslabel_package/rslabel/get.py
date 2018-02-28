@@ -62,26 +62,38 @@ def app(args):
         with tarfile.TarFile(tar) as tf:
             tf.extractall()
 
-        # If this is validation, grab the JSON from the server.
-        if args.validation:
-            tar_base = os.path.splitext(tar)[0]
-            json_name = tar_base + '.json'
+        tar_base = os.path.splitext(tar)[0]
+        json_name = tar_base + '.json'
 
+        # If this is validation (or is partially completed), grab the JSON from
+        # the server.
+        if args.validation:
             sftp.rename(src_dir + json_name, dest_dir + json_name)
             with sftp.cd(dest_dir):
                 print 'Grabbing {}'.format(json_name)
                 sftp.get(json_name, localpath='{}/{}'.format(tar_base, json_name))
         else:
-            # Generate labeling JSON for data to begin labeling.
-            annotations = []
-            for f in sorted(glob.glob('{}/*.jpg'.format(tar_name))):
-                annotations.append({'annotations': [],
-                                    'class': 'image',
-                                    'filename': os.path.basename(f),
-                                    'unlabeled': True})
+            with sftp.cd(src_dir):
+                elements = sftp.listdir()
 
-            with open('{}/{}.json'.format(tar_name, tar_name), 'w') as f:
-                json.dump(annotations, f, indent=4)
+            if json_name in elements:
+                print 'Grabbing {}'.format(json_name)
+                with sftp.cd(src_dir):
+                    sftp.get(json_name, localpath='{}/{}'.format(tar_base, json_name))
+                sftp.rename('{}/{}'.format(src_dir, json_name), '{}/{}'.format(dest_dir, json_name))
+            else:
+                print 'Generating JSON for the dataset.'
+                # Generate labeling JSON for data to begin labeling if it is not
+                # available on the server.
+                annotations = []
+                for f in sorted(glob.glob('{}/*.jpg'.format(tar_name))):
+                    annotations.append({'annotations': [],
+                                        'class': 'image',
+                                        'filename': os.path.basename(f),
+                                        'unlabeled': True})
+
+                with open('{}/{}.json'.format(tar_base, json_name), 'w') as f:
+                    json.dump(annotations, f, indent=4)
 
     # Remove the tar file - We don't need it anymore.
     os.remove(tar)
