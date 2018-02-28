@@ -11,9 +11,11 @@ fi
 # prompt for login information
 echo -n "user: "
 read USER
+echo -n "password: "
+read -s PASS
 
 # fetch list of tars
-tar=$(ssh ${USER}@robosub.eecs.wsu.edu 'ls /data/vision/labeling/labeling_todo/current | grep .tar')
+tar=$(sshpass -p ${PASS} ssh -o StrictHostKeyChecking=no ${USER}@robosub.eecs.wsu.edu 'ls /data/vision/labeling/new/ | grep .tar')
 tarArray=(${tar})
 
 # If there are no tars in the folder, exit.
@@ -29,11 +31,11 @@ echo -n "Grabbing: " ${tarArray[0]}
 echo
 
 # download tar
-rsync -Ph ${USER}@robosub.eecs.wsu.edu:/data/vision/labeling/labeling_todo/current/${tarArray[0]} "."
+sshpass rsync -Ph ${USER}@robosub.eecs.wsu.edu:/data/vision/labeling/new/${tarArray[0]} "."
 echo -n "Moving tar to working_on folder"
 echo
 
 # move downloaded tar to working_on folder
-ssh ${USER}@robosub.eecs.wsu.edu 'mv /data/vision/labeling/labeling_todo/current/'${tarArray[0]} ' /data/vision/labeling/labeling_todo/current/working_on/'
+sshpass -p ${PASS} ssh -o StrictHostKeyChecking=no ${USER}@robosub.eecs.wsu.edu 'mv /data/vision/labeling/new/'${tarArray[0]} ' /data/vision/labeling/in_progress/'
 echo -n "done!"
 echo
