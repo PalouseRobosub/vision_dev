@@ -99,6 +99,8 @@ if __name__ == '__main__':
     print ' Other - Marks an image as \'Good\''
 
     annotation_path = os.path.dirname(args.annotation)
+    if annotation_path == '':
+        annotation_path = '.'
 
     """
     Loop through every image specified in the annotation file.

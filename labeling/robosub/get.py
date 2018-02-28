@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-import argparse
 import glob
 import json
 import pysftp
@@ -9,12 +8,7 @@ import tempfile
 import sys
 import os
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Get data for labeling.')
-    parser.add_argument('--validation', action='store_true')
-
-    args = parser.parse_args()
-
+def app(args):
     password = os.environ.get('ROBOSUB_SFTP_PASSWORD')
     if password is None:
         print 'To suppress this prompt, please set the ROBOSUB_SFTP_PASSWORD environment variable.'

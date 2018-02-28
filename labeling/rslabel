@@ -1,0 +1,38 @@
+#!/usr/bin/python
+
+import argparse
+import robosub.collect
+import robosub.get
+import robosub.ret
+import robosub.upload
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Utility for robosub labeling tasks.')
+    sub_parsers = parser.add_subparsers()
+
+    return_parser = sub_parsers.add_parser('return', help='Check in robosub image labels.')
+    return_parser.add_argument('annotations', type=str, help='The annotations file to upload.')
+    return_parser.add_argument('--auto-delete', action='store_true')
+    return_parser.set_defaults(func=robosub.ret.app)
+
+    collect_parser = sub_parsers.add_parser('collect', help='Collect all done image sets into a single tarball')
+    collect_parser.add_argument('directory', type=str, help='The directory containing tarballs and JSONs')
+    collect_parser.add_argument('tarball', type=str, help='The name of the final tarball to create.')
+    collect_parser.set_defaults(func=robosub.collect.app)
+
+    get_parser = sub_parsers.add_parser('get', help='Get data for labeling.')
+    get_parser.add_argument('--validation', action='store_true')
+    get_parser.set_defaults(func=robosub.get.app)
+
+    upload_parser = sub_parsers.add_parser('upload', help='Split and upload a bag to the server.')
+    upload_parser.add_argument('bag_file', type=str, help='The bag file to upload')
+    upload_parser.add_argument('--files-per-tar', type=int, default=100, help='The number of images per tar archive')
+    upload_parser.set_defaults(func=robosub.upload.app)
+
+    args = parser.parse_args()
+
+    # Call the appropriate handler function
+    args.func(args[1:])
+
+    print 'Done!'
