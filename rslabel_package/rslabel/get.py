@@ -35,13 +35,13 @@ def app(args):
     # Grab the username for data ownership and the SFTP password.
     data_owner = os.environ.get('ROBOSUB_WHO_AM_I')
     if data_owner is None:
-        print 'To suppress this prompt, please set the environment variable '
+        print 'To suppress this prompt, please set the environment variable ',
         print 'ROBOSUB_WHO_AM_I to your name.'
         data_owner = raw_input('Please enter your name (First Last): ')
 
     password = os.environ.get('ROBOSUB_SFTP_PASSWORD')
     if password is None:
-        print 'To suppress this prompt, please set the ROBOSUB_SFTP_PASSWORD '
+        print 'To suppress this prompt, please set the ROBOSUB_SFTP_PASSWORD ',
         print 'environment variable.'
         password = raw_input('Please enter the Robosub SFTP password: ')
 
@@ -54,7 +54,7 @@ def app(args):
             tars = [x for x in sftp.listdir() if str(x).endswith('.tar')]
 
         if len(tars) == 0:
-            print 'No data is available at '
+            print 'No data is available at ',
             print 'robosub.eecs.wsu.edu/data/vision/labeling/' + src_dir
             sys.exit(0)
 
