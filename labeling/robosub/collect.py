@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-import argparse
 import os
 import tempfile
 import progressbar
@@ -10,14 +9,7 @@ import glob
 import shutil
 
 
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Collects multiple tarballs into a single dataset.')
-    parser.add_argument('directory', type=str, help='The directory containing tarballs and JSONs')
-    parser.add_argument('tarball', type=str, help='The name of the final tarball to create.')
-
-    args = parser.parse_args()
-
+def app(args):
     files = glob.glob(args.directory + '/*')
 
     tarballs = [x for x in files if x.endswith('.tar')]

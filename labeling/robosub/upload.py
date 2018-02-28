@@ -43,13 +43,7 @@ def unbag_images(bag, directory):
     bar.finish()
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Unbags images and uploads them')
-    parser.add_argument('bag_file', type=str, help='The bag file to upload')
-    parser.add_argument('--files-per-tar', type=int, default=100, help='The number of images per tar archive')
-
-    args = parser.parse_args()
-
+def app(args):
     password = os.environ.get('ROBOSUB_SFTP_PASSWORD')
     if password is None:
         print 'To suppress this prompt, please set the ROBOSUB_SFTP_PASSWORD environment variable.'
