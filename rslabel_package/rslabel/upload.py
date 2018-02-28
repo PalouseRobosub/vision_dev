@@ -1,17 +1,22 @@
 #!/usr/bin/python
+"""
+@author Ryan Summers
+@date 2-27-2018
 
-import rosbag
-import argparse
-import tempfile
+@brief Unbags images from a ROS Bag and uploads them to the Robosub server.
+"""
+
+import cv2
+import cv_bridge
 import glob
+import json
 import os
+import progressbar
 import pysftp
+import rosbag
 import shutil
 import tarfile
-import progressbar
-import cv_bridge
-import cv2
-import json
+import tempfile
 
 
 def unbag_images(bag, directory):
@@ -44,9 +49,17 @@ def unbag_images(bag, directory):
 
 
 def app(args):
+    """ Main entry point to the unbag_upload application.
+
+    Arguments
+        args: Passed in by argparse. Must have member `bag_file` that denotes
+              the path to the Rosbag. Must have member `files_per_tar` that
+              denotes how many images should be put into each archive.
+    """
     password = os.environ.get('ROBOSUB_SFTP_PASSWORD')
     if password is None:
-        print 'To suppress this prompt, please set the ROBOSUB_SFTP_PASSWORD environment variable.'
+        print 'To suppress this prompt, please set the ROBOSUB_SFTP_PASSWORD '
+        print 'environment variable.'
         password = raw_input('Please enter the Robosub SFTP password: ')
 
     working_directory = tempfile.mkdtemp(dir='/tmp')
@@ -85,7 +98,8 @@ def app(args):
             shutil.move(img, image_dir)
 
         # Create an archive with the JSON annotation file and the images.
-        with tarfile.TarFile('{}/{}.tar'.format(working_directory, os.path.basename(image_dir)), mode='w') as tf:
+        with tarfile.TarFile('{}/{}.tar'.format(working_directory,
+                                os.path.basename(image_dir)), mode='w') as tf:
             tf.add(image_dir, arcname=os.path.basename(image_dir))
 
         # Remove the image directory after we have archived it.
@@ -95,12 +109,13 @@ def app(args):
 
     # Upload the tar archives to the Robosub server using the PySFTP client.
     print 'Uploading archives to server...'
-    bar_tar = progressbar.ProgressBar(max_value=len(glob.glob('{}/*.tar'.format(working_directory))))
+    files = glob.glob('{}/*.tar'.format(working_directory))
+    bar_tar = progressbar.ProgressBar(max_value=len(files))
     with pysftp.Connection('robosub.eecs.wsu.edu',
             username='sftp_user',
             password=password,
             default_path='/data/vision/labeling/new') as sftp:
-        for i, f in enumerate(glob.glob('{}/*.tar'.format(working_directory))):
+        for i, f in enumerate(files):
             bar_tar.update(i)
             sftp.put(f)
     bar_tar.finish()
