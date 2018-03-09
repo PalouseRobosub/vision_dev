@@ -32,4 +32,6 @@ setup(
         "pysftp",
 		"progressbar2",
     ],
+
+    python_requires='2.*',
 )
