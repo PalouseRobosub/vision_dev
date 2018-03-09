@@ -17,7 +17,7 @@ setup(
     packages=["rslabel"],
 
     # Details
-    url="http://robosub.eecs.wsu.edu/wiki/cs/labeling",
+    url="http://robosub.eecs.wsu.edu/wiki/cs/vision/image_tagging/start#data-management",
 
     #
     # license="LICENSE.txt",
