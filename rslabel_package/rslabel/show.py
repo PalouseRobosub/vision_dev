@@ -14,6 +14,11 @@ import shutil
 import sys
 import tempfile
 
+try:
+    input = raw_input
+except:
+    pass
+
 
 def get_json_stats(sftp):
     """ Collects metadata about the completed datasets. """
@@ -24,7 +29,7 @@ def get_json_stats(sftp):
     output_dictionary = dict()
 
     # Get information about each JSON in the directory.
-    print 'Grabbing JSON information...'
+    print('Grabbing JSON information...')
     bar = progressbar.ProgressBar(max_value=len(jsons))
     for i, f in enumerate(jsons):
         bar.update(i)
@@ -63,9 +68,10 @@ def app(args):
     """
     password = os.environ.get('ROBOSUB_SFTP_PASSWORD')
     if password is None:
-        print 'To suppress this prompt, please set the ROBOSUB_SFTP_PASSWORD ',
-        print 'environment variable.'
-        password = raw_input('Please enter the Robosub SFTP password: ')
+        print('To suppress this prompt, please set the ROBOSUB_SFTP_PASSWORD ',
+                end='')
+        print('environment variable.')
+        password = input('Please enter the Robosub SFTP password: ')
 
     # Open an SFTP connection with the robosub server.
     with pysftp.Connection('robosub.eecs.wsu.edu',
@@ -91,12 +97,12 @@ def app(args):
             done_tars = [x for x in sftp.listdir() if x.endswith('.tar')]
             done_dict = get_json_stats(sftp)
 
-        print 'Image sets waiting to be labeled: {}'.format(len(new_tars))
-        print 'Image sets waiting to be validated: {}'.format(len(unvalidated_tars))
-        print 'Image sets being validated: {}'.format(len(current_validation_tars))
-        print 'Image sets being labeled: {}'.format(len(current_labeling_tars))
-        print ''
-        print 'Done dataset stats:'
-        print 'Label\tNumber\tCorrect'
+        print('Image sets waiting to be labeled: {}'.format(len(new_tars)))
+        print('Image sets waiting to be validated: {}'.format(len(unvalidated_tars)))
+        print('Image sets being validated: {}'.format(len(current_validation_tars)))
+        print('Image sets being labeled: {}'.format(len(current_labeling_tars)))
+        print('')
+        print('Done dataset stats:')
+        print('Label\tNumber\tCorrect')
         for key in done_dict:
-            print '{}\t{}\t{}'.format(key, done_dict[key]['count'], done_dict[key]['good'])
+            print('{}\t{}\t{}'.format(key, done_dict[key]['count'], done_dict[key]['good']))

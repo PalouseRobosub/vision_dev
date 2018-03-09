@@ -6,8 +6,8 @@ setup(
     # Application name:
     name="rslabel",
 
-    # Version number (initial):
-    version="0.3.3",
+    # Version number:
+    version="0.4.0",
 
     # Application author details:
     author="Ryan Summers",
@@ -30,7 +30,8 @@ setup(
     # Dependent packages (distributions)
     install_requires=[
         "pysftp",
-		"progressbar2",
+        "progressbar2",
+        "opencv-python",
     ],
 
     python_requires='2.*',

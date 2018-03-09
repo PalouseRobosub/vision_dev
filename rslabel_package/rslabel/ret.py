@@ -12,6 +12,11 @@ import pysftp
 import shutil
 import sys
 
+try:
+    input = raw_input
+except:
+    pass
+
 
 def app(args):
     """ Main entry point for returning data to the server.
@@ -22,9 +27,10 @@ def app(args):
     """
     password = os.environ.get('ROBOSUB_SFTP_PASSWORD')
     if password is None:
-        print 'To suppress this prompt, please set the ROBOSUB_SFTP_PASSWORD ',
-        print 'environment variable.'
-        password = raw_input('Please enter the Robosub SFTP password: ')
+        print('To suppress this prompt, please set the ROBOSUB_SFTP_PASSWORD ',
+                end='')
+        print('environment variable.')
+        password = input('Please enter the Robosub SFTP password: ')
 
     # Read the annotations to check if validation or labeling have been
     # completed.
@@ -79,26 +85,30 @@ def app(args):
             src_dir = 'in_progress/validation/'
             dest_dir = 'done/' if complete else 'unvalidated/'
         else:
-            print 'The supplied JSON name does not match any in-progress ',
-            print 'validation or labeling sessions.'
-            print 'Current labeling sessions: {}'.format(labeling_tars)
-            print 'Current validation sessions: {}'.format(validation_tars)
+            print('The supplied JSON name does not match any in-progress ',
+                    end='')
+            print('validation or labeling sessions.')
+            print('Current labeling sessions: {}'.format(labeling_tars))
+            print('Current validation sessions: {}'.format(validation_tars))
             sys.exit(-1)
 
         if not complete:
             if in_validation:
-                print 'Validation was not completed. Returning progress to ',
-                print 'unvalidated datasets.'
+                print('Validation was not completed. Returning progress to ',
+                        end='')
+                print('unvalidated datasets.')
             else:
-                print 'Labeling was not completed. Returning progress to new ',
-                print 'datasets.'
+                print('Labeling was not completed. Returning progress to new ',
+                        end='')
+                print('datasets.')
 
         with sftp.cd(src_dir):
             tars = [x for x in sftp.listdir() if x.endswith('.tar')]
 
         if tar_name not in tars:
-            print 'The provided annotations dataset was not found in ',
-            print 'robosub.eecs.wsu.edu:/data/vision/labeling/' + src_dir
+            print('The provided annotations dataset was not found in ',
+                    end='')
+            print('robosub.eecs.wsu.edu:/data/vision/labeling/' + src_dir)
             sys.exit(-1)
 
         # Upload the JSON to the server.
@@ -122,12 +132,12 @@ def app(args):
             if args.auto_delete:
                 delete = True
             else:
-                user_input = raw_input('Delete folder `{}/`? (y/n): '.format(
+                user_input = input('Delete folder `{}/`? (y/n): '.format(
                             directory))
                 delete = user_input == 'y' or user_input == 'Y'
 
             if delete:
-                print 'Deleting {}/'.format(directory)
+                print('Deleting {}/'.format(directory))
                 shutil.rmtree(directory)
 
-        print 'Data has been successfully returned.'
+        print('Data has been successfully returned.')

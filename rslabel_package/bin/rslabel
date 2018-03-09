@@ -44,4 +44,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Call the appropriate handler function
-    args.func(args)
+    try:
+        args.func(args)
+    except:
+        parser.print_help()
