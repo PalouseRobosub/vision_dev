@@ -6,17 +6,28 @@
 @brief Unbags images from a ROS Bag and uploads them to the Robosub server.
 """
 
+enabled = True
+
 import cv2
-import cv_bridge
 import glob
 import json
 import os
 import progressbar
 import pysftp
-import rosbag
+try:
+    import rosbag
+    import cv_bridge
+except:
+    print('ROS installation not detected. Upload command disabled')
+    enabled = False
 import shutil
 import tarfile
 import tempfile
+
+try:
+    input = raw_input
+except:
+    pass
 
 
 def unbag_images(bag, directory):
@@ -33,7 +44,7 @@ def unbag_images(bag, directory):
             '/camera/bottom/undistorted'])
     bar = progressbar.ProgressBar(max_value=msg_count)
     i = 0
-    print 'Unbagging images...'
+    print('Unbagging images...')
     for topic, msg, t in bag.read_messages(
             topics=['/camera/left/undistorted',
                     '/camera/right/undistorted',
@@ -56,11 +67,17 @@ def app(args):
               the path to the Rosbag. Must have member `files_per_tar` that
               denotes how many images should be put into each archive.
     """
+    if not enabled:
+        print('The upload command is not enabled because ROS is not properly ')
+        print('installed on the host system.')
+        return
+
     password = os.environ.get('ROBOSUB_SFTP_PASSWORD')
     if password is None:
-        print 'To suppress this prompt, please set the ROBOSUB_SFTP_PASSWORD ',
-        print 'environment variable.'
-        password = raw_input('Please enter the Robosub SFTP password: ')
+        print('To suppress this prompt, please set the ROBOSUB_SFTP_PASSWORD ',
+                end='')
+        print('environment variable.')
+        password = input('Please enter the Robosub SFTP password: ')
 
     working_directory = tempfile.mkdtemp(dir='/tmp')
 
@@ -69,7 +86,7 @@ def app(args):
     temp_dir = tempfile.mkdtemp(dir=working_directory)
     unbag_images(ros_bag, temp_dir)
 
-    print 'Images unbagged to {}'.format(temp_dir)
+    print('Images unbagged to {}'.format(temp_dir))
 
     # Get a list of all the unbagged images.
     images = glob.glob('{}/*.jpg'.format(temp_dir))
@@ -78,7 +95,7 @@ def app(args):
     bag_base = os.path.splitext(os.path.basename(args.bag_file))[0]
 
     # Move the jpgs into individual archives.
-    print 'Creating image archives...'
+    print('Creating image archives...')
     bar = progressbar.ProgressBar(max_value=len(images))
 
     for i in range(0, len(images), args.files_per_tar):
@@ -108,7 +125,7 @@ def app(args):
     bar.finish()
 
     # Upload the tar archives to the Robosub server using the PySFTP client.
-    print 'Uploading archives to server...'
+    print('Uploading archives to server...')
     files = glob.glob('{}/*.tar'.format(working_directory))
     bar_tar = progressbar.ProgressBar(max_value=len(files))
     with pysftp.Connection('robosub.eecs.wsu.edu',

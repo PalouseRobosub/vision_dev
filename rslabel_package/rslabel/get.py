@@ -15,6 +15,11 @@ import sys
 import tarfile
 import tempfile
 
+try:
+    input = raw_input
+except:
+    pass
+
 
 def app(args):
     """ Main entry point for the dataset getter application.
@@ -35,15 +40,17 @@ def app(args):
     # Grab the username for data ownership and the SFTP password.
     data_owner = os.environ.get('ROBOSUB_WHO_AM_I')
     if data_owner is None:
-        print 'To suppress this prompt, please set the environment variable ',
-        print 'ROBOSUB_WHO_AM_I to your name.'
-        data_owner = raw_input('Please enter your name (First Last): ')
+        print('To suppress this prompt, please set the environment variable ',
+                end='')
+        print('ROBOSUB_WHO_AM_I to your name.')
+        data_owner = input('Please enter your name (First Last): ')
 
     password = os.environ.get('ROBOSUB_SFTP_PASSWORD')
     if password is None:
-        print 'To suppress this prompt, please set the ROBOSUB_SFTP_PASSWORD ',
-        print 'environment variable.'
-        password = raw_input('Please enter the Robosub SFTP password: ')
+        print('To suppress this prompt, please set the ROBOSUB_SFTP_PASSWORD ',
+                end='')
+        print('environment variable.')
+        password = input('Please enter the Robosub SFTP password: ')
 
     # Create an SFTP connection to the robosub server for getting data.
     with pysftp.Connection('robosub.eecs.wsu.edu',
@@ -54,13 +61,13 @@ def app(args):
             tars = [x for x in sftp.listdir() if str(x).endswith('.tar')]
 
         if len(tars) == 0:
-            print 'No data is available at ',
-            print 'robosub.eecs.wsu.edu/data/vision/labeling/' + src_dir
+            print('No data is available at ',)
+            print('robosub.eecs.wsu.edu/data/vision/labeling/' + src_dir)
             sys.exit(0)
 
         tar = str(tars[0])
 
-        print 'Grabbing {}'.format(tar)
+        print('Grabbing {}'.format(tar))
 
         tar_name = os.path.splitext(tar)[0]
 
@@ -94,7 +101,7 @@ def app(args):
         if args.validation:
             sftp.rename(src_dir + json_name, dest_dir + json_name)
             with sftp.cd(dest_dir):
-                print 'Grabbing {}'.format(json_name)
+                print('Grabbing {}'.format(json_name))
                 sftp.get(json_name,
                          localpath='{}/{}'.format(tar_base, json_name))
         else:
@@ -102,7 +109,7 @@ def app(args):
                 elements = sftp.listdir()
 
             if json_name in elements:
-                print 'Grabbing {}'.format(json_name)
+                print('Grabbing {}'.format(json_name))
                 with sftp.cd(src_dir):
                     sftp.get(json_name,
                              localpath='{}/{}'.format(tar_base, json_name))
@@ -111,7 +118,7 @@ def app(args):
             else:
                 # Generate labeling JSON for data to begin labeling if it is not
                 # available on the server.
-                print 'Generating JSON for the dataset.'
+                print('Generating JSON for the dataset.')
                 annotations = []
                 for f in sorted(glob.glob('{}/*.jpg'.format(tar_name))):
                     annotations.append({'annotations': [],
@@ -125,4 +132,4 @@ def app(args):
     # Remove the tar file - We don't need it anymore.
     os.remove(tar)
 
-    print 'Images available in {}'.format(tar_name)
+    print('Images available in {}'.format(tar_name))
