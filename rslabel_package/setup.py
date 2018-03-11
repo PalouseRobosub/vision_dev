@@ -33,6 +33,4 @@ setup(
         "progressbar2",
         "opencv-python",
     ],
-
-    python_requires='2.*',
 )
