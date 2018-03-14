@@ -6,6 +6,8 @@
 @brief Gets data for labelling or validation from the Robosub server.
 """
 
+from __future__ import print_function
+
 import glob
 import json
 import os

@@ -6,6 +6,8 @@
 @brief Gets information about available datasets on the robosub server.
 """
 
+from __future__ import print_function
+
 import json
 import os
 import progressbar

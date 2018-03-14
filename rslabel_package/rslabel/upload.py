@@ -6,6 +6,8 @@
 @brief Unbags images from a ROS Bag and uploads them to the Robosub server.
 """
 
+from __future__ import print_function
+
 enabled = True
 
 import cv2

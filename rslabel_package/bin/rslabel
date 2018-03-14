@@ -10,8 +10,9 @@ import argparse
 
 from rslabel import collect
 from rslabel import get
-from rslabel import show
+from rslabel import marker
 from rslabel import ret
+from rslabel import show
 from rslabel import upload
 
 
@@ -40,6 +41,13 @@ if __name__ == '__main__':
     upload_parser.add_argument('bag_file', type=str, help='The bag file to extract and upload')
     upload_parser.add_argument('--files-per-tar', type=int, default=50, help='The number of images per tar archive')
     upload_parser.set_defaults(func=upload.app)
+
+    mark_parser = sub_parsers.add_parser('mark', description='Validate labels on tagged images.')
+    mark_parser.add_argument('annotations', type=str, help='The annotation file to validate.')
+    mark_parser.add_argument('--config', type=str, help='YAML configuration file that specifies overlay colors for specific labels.')
+    mark_parser.add_argument('--label', type=str, help='Only show images with the specified label.')
+    mark_parser.add_argument('--beginning', action='store_true', help='Start at the beginning of the images.')
+    mark_parser.set_defaults(func=marker.app)
 
     args = parser.parse_args()
 

@@ -6,6 +6,8 @@
 @brief Returns labeled or validated datasets to the robosub server.
 """
 
+from __future__ import print_function
+
 import json
 import os
 import pysftp
