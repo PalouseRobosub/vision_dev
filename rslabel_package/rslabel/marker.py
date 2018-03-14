@@ -151,8 +151,6 @@ def app(args):
         args: Provided by argparse command line arguments.
     """
     # Load an optionally provided configuration file.
-    # TODO: Grab a default configuration file from the Robosub Server if none
-    #       is provided.
     global annotation_config
     if args.config is not None:
         with open(args.config, 'r') as f:
