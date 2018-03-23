@@ -211,7 +211,8 @@ def app(args):
         try:
             current_img = PhotoShow(
                     '{}/{}'.format(annotation_path, annotation['filename']),
-                    annotation['annotations'])
+                    annotation['annotations'],
+                    scale=args.scale)
         except:
             logging.warning('Failed to read {}'.format(annotation['filename']))
             i = i + 1
@@ -234,13 +235,14 @@ def app(args):
             if len(history) > 0:
                 i = history[-1]
                 history = history[:-1]
+                continue
             else:
                 print('There is no previous image to display.')
-            continue
+            break
 
         elif status == 's':
             print('SKIP: {}'.format(annotation['filename']))
-            continue
+            break
 
         elif status == 'e' or status == 'q':
             break

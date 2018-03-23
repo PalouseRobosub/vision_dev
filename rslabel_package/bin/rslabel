@@ -47,6 +47,7 @@ if __name__ == '__main__':
     mark_parser.add_argument('--config', type=str, help='YAML configuration file that specifies overlay colors for specific labels.')
     mark_parser.add_argument('--label', type=str, help='Only show images with the specified label.')
     mark_parser.add_argument('--beginning', action='store_true', help='Start at the beginning of the images.')
+    mark_parser.add_argument('--scale', type=float, help='Specifies image sizing.', default=1.0)
     mark_parser.set_defaults(func=marker.app)
 
     args = parser.parse_args()
