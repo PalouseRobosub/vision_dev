@@ -10,21 +10,27 @@ from __future__ import print_function
 
 enabled = True
 
-import cv2
 import glob
 import json
 import os
 import progressbar
 import pysftp
+import shutil
+import tarfile
+import tempfile
+
+try:
+    import cv2
+except:
+    print('OpenCV installation not detected. Upload command disabled.')
+    enabled = False
+
 try:
     import rosbag
     import cv_bridge
 except:
     print('ROS installation not detected. Upload command disabled')
     enabled = False
-import shutil
-import tarfile
-import tempfile
 
 try:
     input = raw_input
@@ -70,8 +76,8 @@ def app(args):
               denotes how many images should be put into each archive.
     """
     if not enabled:
-        print('The upload command is not enabled because ROS is not properly ')
-        print('installed on the host system.')
+        print('The upload command is not enabled because ROS or OpenCV is not'
+        print('properly installed on the host system.')
         return
 
     password = os.environ.get('ROBOSUB_SFTP_PASSWORD')
