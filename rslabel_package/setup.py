@@ -31,6 +31,5 @@ setup(
     install_requires=[
         "pysftp",
         "progressbar2",
-        "opencv-python",
     ],
 )

@@ -8,7 +8,16 @@
 
 from __future__ import print_function
 
-import cv2
+enabled = True
+
+try:
+    import cv2
+except:
+    print('Failed to import OpenCV2. Marker command disabled.')
+    print('Please install OpenCV2 manually to enable data validation.')
+    print(' - pip install opencv-python')
+    enabled = False
+
 import json
 import logging
 import operator
@@ -150,6 +159,11 @@ def app(args):
     Args:
         args: Provided by argparse command line arguments.
     """
+    if not enabled:
+        print('marker command disabled. Please install opencv-python')
+        print(' - pip install opencv-python')
+        return
+
     # Load an optionally provided configuration file.
     global annotation_config
     if args.config is not None:
