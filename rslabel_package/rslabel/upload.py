@@ -76,7 +76,7 @@ def app(args):
               denotes how many images should be put into each archive.
     """
     if not enabled:
-        print('The upload command is not enabled because ROS or OpenCV is not'
+        print('The upload command is not enabled because ROS or OpenCV is not')
         print('properly installed on the host system.')
         return
 
