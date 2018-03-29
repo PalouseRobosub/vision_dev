@@ -2,32 +2,12 @@
 
 ## Scripts
 
-- ### unbagger.py
-   This script removes images from a bag file and saves them into an output directory
-
-   - #### Usage
-      `rosrun unbagger.py <save directory> <bag filename>`
-      - save directory: [string] The directory to save the images into once they have been extracted
-      - bag filename: [string] The filepath to the bag file to extract images from
-
 - ### split_data.sh
    This script splits a directory full of images into multiple numbered directories with 100 images each
 
    - #### Usage
       `./split_data.sh <source directory>`
-      - source directory: [string] The directory storing the original set of images
-      
-- ### download_data.sh
-   This script automatically downloads and extracts data from the robosub data server.
-
-   You must provide a subdirectory on the server from which to download data as well as the id number associated with the files you wish to download.
-
-   You will be prompted for a username and password upon execution.
-
-   - ### Usage
-      `./download_data.sh <subdirectory> <id> [<id2> ...]`
-      - subdirectory: [string] The subdirectory on the server to look in for files. This should include the partial filename of the directory excluding the unique identifier and .tar portions
-      - id: [integers] A list of unique identifiers desired to download. This is appended to the subdirectory and followed by the .tar extension automatically for each id given.
+      - source directory: [string] The directory storing the original set of image
       
 ## Sloth
 Sloth is an image tagging tool.
@@ -72,3 +52,9 @@ Provided, is the sloth configuration file, `robosub_config.py`, to specialize sl
       - filename: [string] The filepath to the *.darknet file from which to extract information.
       - output directory: [string] The directory into which the darknet compatible annotation files are output.
       - (optional) training list filename: [string] The filename of the output training list
+- ### sloth_to_tfrecord.py
+   Converts json format files into tenserflow format.
+   - #### Usage
+      `./sloth_to_tfrecord.py <config_file> <output directory>`
+      - filename: [string] The filepath to the *.json file from which to extract information.
+      - output directory: [string] The directory into which the darknet compatible annotation files are output.
