@@ -1,0 +1,1 @@
+0.6.0: Added in `stats` command for stat tracking.

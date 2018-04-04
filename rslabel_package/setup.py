@@ -7,7 +7,7 @@ setup(
     name="rslabel",
 
     # Version number:
-    version="0.5.1",
+    version="0.6.0",
 
     # Application author details:
     author="Ryan Summers",
