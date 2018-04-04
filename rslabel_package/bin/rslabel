@@ -13,6 +13,7 @@ from rslabel import get
 from rslabel import marker
 from rslabel import ret
 from rslabel import show
+from rslabel import stats
 from rslabel import upload
 
 
@@ -49,6 +50,9 @@ if __name__ == '__main__':
     mark_parser.add_argument('--beginning', action='store_true', help='Start at the beginning of the images.')
     mark_parser.add_argument('--scale', type=float, help='Specifies image sizing.', default=1.0)
     mark_parser.set_defaults(func=marker.app)
+
+    stats_parser = sub_parsers.add_parser('stats', description='Get stats on user labeling.')
+    stats_parser.set_defaults(func=stats.app)
 
     args = parser.parse_args()
 

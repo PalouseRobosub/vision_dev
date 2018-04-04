@@ -210,8 +210,9 @@ def app(args):
 
         # Finally, upload the stats to the history folder on the
         # server for stats tracking.
-        stats = {data_owner: log,
-                 'date-time': datetime.datetime.now().isoformat()}
+        stats = [{'owner': data_owner,
+                  'stats': log,
+                  'date-time': datetime.datetime.now().isoformat()}]
 
         # Only upload stats if someone has modified the annotations.
         if log['images_labeled'] != 0 or log['images_validated'] != 0:
