@@ -35,6 +35,9 @@ def app(args):
     if args.validation:
         src_dir = 'unvalidated/'
         dest_dir = 'in_progress/validation/'
+    elif args.clarification:
+        src_dir = 'clarification/'
+        dest_dir = 'in_progress/clarification/'
     else:
         src_dir = 'new/'
         dest_dir = 'in_progress/labeling/'

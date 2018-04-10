@@ -33,6 +33,7 @@ if __name__ == '__main__':
 
     get_parser = sub_parsers.add_parser('get', description='Get a dataset for labeling or validation.')
     get_parser.add_argument('--validation', action='store_true', help='Denotes that data should be grabbed for validation instead of labeling.')
+    get_parser.add_argument('--clarification', action='store_true', help='Denotes that data should be grabbed for clarification instead of labeling.')
     get_parser.set_defaults(func=get.app)
 
     show_parser = sub_parsers.add_parser('show', description='Get stats about the image dataset including number of each label type and data sets currently in the processing pipeline.')
