@@ -70,6 +70,7 @@ def app(args):
             clarification_tars = [x for x in sftp.listdir() if x.endswith('.tar')]
 
         in_validation = False
+        delete = False
 
         # If the dataset is currently being labeled, set up the proper source
         # and destination paths on the server. If labeling or validation is not
@@ -125,7 +126,7 @@ def app(args):
                 with open('{}/{}'.format(tar_base, json_name), 'w') as f:
                     json.dump(annotations, f, indent=4)
                 with tarfile.open(tar_base, "w") as tar:
-                    tar.add(tar_base, arcname=tar_base)
+                    tar.add(tar_base, arcname=tar_name)
             src_dir = 'in_progress/clarification'
             dest_dir = 'in_progress/new'
         else:
@@ -211,12 +212,19 @@ def app(args):
                         log['images_labeled'] += 1
 
         # Upload the JSON to the server.
-        with sftp.cd(dest_dir):
-            sftp.put(args.annotations)
+        if not delete:
+            with sftp.cd(dest_dir):
+                sftp.put(args.annotations)
+        else:
+            with sftp.cd(dest_dir):
+                sftp.put(tar_name)
 
         # Move the tar from in_progress to the proper destination.
-        sftp.rename('{}/{}'.format(src_dir, tar_name),
-                    '{}/{}'.format(dest_dir, tar_name))
+        if not delete:
+            sftp.rename('{}/{}'.format(src_dir, tar_name),
+                        '{}/{}'.format(dest_dir, tar_name))
+        else:
+            sftp.remove('{}/{}'.format(src_dir, tar_name)
 
         # Remove the ownership and annotation files.
         with sftp.cd(src_dir):
