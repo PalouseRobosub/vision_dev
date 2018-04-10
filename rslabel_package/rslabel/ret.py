@@ -66,6 +66,9 @@ def app(args):
         with sftp.cd('in_progress/validation/'):
             validation_tars = [x for x in sftp.listdir() if x.endswith('.tar')]
 
+        with sftp.cd('in_progress/clarification/'):
+            clarification_tars = [x for x in sftp.listdir() if x.endswith('.tar')]
+
         in_validation = False
 
         # If the dataset is currently being labeled, set up the proper source
@@ -97,6 +100,34 @@ def app(args):
                     break
             src_dir = 'in_progress/validation/'
             dest_dir = 'done/' if complete else 'unvalidated/'
+        elif tar_name in clarification_tars:
+
+            delete = False
+            for annotation in json_contents:
+                try:
+                    status = annotation['status']
+                    if status == 'bad':
+                        os.remove(annotation['filename'])
+                        delete = True
+                except:
+                    pass
+            if delete:
+                os.remove(tar_name)
+                annotations = []
+                tar_base = os.path.splitext(tar_name)[0]
+                json_name = tar_base + '.json'
+                for f in sorted(glob.glob('{}/*.jpg'.format(tar_base))):
+                    annotations.append({'annotations': [],
+                                        'class': 'image',
+                                        'filename': os.path.basename(f),
+                                        'unlabeled': True})
+
+                with open('{}/{}'.format(tar_base, json_name), 'w') as f:
+                    json.dump(annotations, f, indent=4)
+                with tarfile.open(tar_base, "w") as tar:
+                    tar.add(tar_base, arcname=tar_base)
+            src_dir = 'in_progress/clarification'
+            dest_dir = 'in_progress/new'
         else:
             print('The supplied JSON name does not match any in-progress ',
                     end='')
