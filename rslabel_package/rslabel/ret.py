@@ -106,14 +106,12 @@ def app(args):
             delete = False
             for annotation in json_contents:
                 try:
-                    status = annotation['status']
-                    if status == 'bad':
-                        os.remove(annotation['filename'])
+                    if annotation['status'] == 'bad':
+                        os.remove(os.path.basename(annotation['filename']))
                         delete = True
                 except:
                     pass
             if delete:
-                os.remove(tar_name)
                 annotations = []
                 tar_base = os.path.splitext(tar_name)[0]
                 json_name = tar_base + '.json'
@@ -127,6 +125,8 @@ def app(args):
                     json.dump(annotations, f, indent=4)
                 with tarfile.open(tar_base, "w") as tar:
                     tar.add(tar_base, arcname=tar_name)
+                    for f in sorted(glob.glob('{}/*.jpg'.format(tar_base))):
+                        tar.add(f, arcname=tar_name)
             src_dir = 'in_progress/clarification'
             dest_dir = 'in_progress/new'
         else:
@@ -224,7 +224,7 @@ def app(args):
             sftp.rename('{}/{}'.format(src_dir, tar_name),
                         '{}/{}'.format(dest_dir, tar_name))
         else:
-            sftp.remove('{}/{}'.format(src_dir, tar_name)
+            sftp.remove('{}/{}'.format(src_dir, tar_name))
 
         # Remove the ownership and annotation files.
         with sftp.cd(src_dir):
