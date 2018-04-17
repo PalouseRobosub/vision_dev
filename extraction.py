@@ -44,7 +44,7 @@ if __name__ == '__main__':
     extract_parser = argparse.ArgumentParser(description='Utility for robosub labeling task to extract images')
     extract_parser.add_argument('name', type=str, help='name of the json file')
     extract_parser.add_argument('--labels', nargs='+', help='type labels names seperated by spaces to be extracted')
-    extract_parser.add_argument('--tar', type="store_true", help='if you want to put them into tar')
+    extract_parser.add_argument('--tar', action='store_true', help='if you want to put them into tar')
     extract_parser.set_defaults(func=app)
 
     args = extract_parser.parse_args()
