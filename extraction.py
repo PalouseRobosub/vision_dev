@@ -6,18 +6,20 @@ import argparse
 import tarfile
 import glob
 
+# This script is used to extract labels and images from a dataset.
+
 def app(args):
-    with open(args.annotations, 'r') as f:
+    with open(args.name, 'r') as f:
         json_contents = json.load(f)
 
-    tar_name = os.path.splitext(os.path.basename(args.annotations))[0]
+    tar_name = os.path.splitext(os.path.basename(args.name))[0]
 
     annotations = []
     for annotation in json_contents:
         if annotation['annotations'] != []:
             found = []
             for p in annotation['annotations']:
-                if p['class'] in :
+                if p['class'] in args.labels:
                     if p['class'] != 'start_gate_post' and p in found:
                         break
                     found.append(p)
@@ -30,17 +32,18 @@ def app(args):
                 except:
                     pass
 
-    with open(args.annotations, 'w') as f:
+    with open(args.name, 'w') as f:
         json.dump(annotations, f, indent=4)
 
     if args.tar:
         with tarfile.open(tar_name, "w") as tar:
-            tar.add(os.path.dirname(args.annotations))
+            tar.add(os.path.dirname(args.name))
 
 if __name__ == '__main__':
 
     extract_parser = argparse.ArgumentParser(description='Utility for robosub labeling task to extract images')
-    extract_parser.add_argument('--annotations', nargs='+', help='type labels names seperated by spaces to be extracted')
+    extract_parser.add_argument('name', type=str, help='name of the json file')
+    extract_parser.add_argument('--labels', nargs='+', help='type labels names seperated by spaces to be extracted')
     extract_parser.add_argument('--tar', type="store_true", help='if you want to put them into tar')
     extract_parser.set_defaults(func=app)
 
