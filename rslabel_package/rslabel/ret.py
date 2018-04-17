@@ -15,6 +15,8 @@ import pysftp
 import shutil
 import sys
 import tempfile
+import glob
+import tarfile
 
 try:
     input = raw_input
@@ -49,9 +51,7 @@ def app(args):
     # completed.
     with open(args.annotations, 'r') as f:
         json_contents = json.load(f)
-
     tar_name = os.path.splitext(os.path.basename(args.annotations))[0] + '.tar'
-
     # Open an SFTP connection with the robosub server.
     with pysftp.Connection('robosub.eecs.wsu.edu',
                 username='sftp_user',
@@ -73,9 +73,9 @@ def app(args):
         delete = False
 
         # If the dataset is currently being labeled, set up the proper source
-        # and destination paths on the server. If labeling or validation is not
-        # fully completed, move from in_progress back into the intermediate
-        # step.
+        # and destination paths on the server. If labeling or validation or
+        # clarification is not fully completed, move from in_progress back
+        # into the intermediate step.
         if tar_name in labeling_tars:
 
             complete = True
@@ -102,39 +102,48 @@ def app(args):
             src_dir = 'in_progress/validation/'
             dest_dir = 'done/' if complete else 'unvalidated/'
         elif tar_name in clarification_tars:
+            delete = True
+            complete = True
 
-            delete = False
+            dir_name = os.path.dirname(args.annotations)
+
+            # Looping over to see if there are bad images, and see if the tar is complete
             for annotation in json_contents:
                 try:
-                    if annotation['status'] == 'bad':
-                        os.remove(os.path.basename(annotation['filename']))
-                        delete = True
+                    ann = annotation['status']
+                    if ann == 'Bad':
+                        os.remove("{}/{}".format(dir_name, annotation['filename']))
                 except:
+                    complete = False
                     pass
+            # If we need to delete json file, because it has bad images
             if delete:
                 annotations = []
                 tar_base = os.path.splitext(tar_name)[0]
                 json_name = tar_base + '.json'
+                if dir_name == '':
+                    dir_name = "."
                 for f in sorted(glob.glob('{}/*.jpg'.format(tar_base))):
                     annotations.append({'annotations': [],
                                         'class': 'image',
                                         'filename': os.path.basename(f),
                                         'unlabeled': True})
 
-                with open('{}/{}'.format(tar_base, json_name), 'w') as f:
+                os.remove(args.annotations)
+                os.remove("{}/{}".format(dir_name, dir_name + "-original.json"))
+                with open(args.annotations, 'w') as f:
                     json.dump(annotations, f, indent=4)
-                with tarfile.open(tar_base, "w") as tar:
-                    tar.add(tar_base, arcname=tar_name)
-                    for f in sorted(glob.glob('{}/*.jpg'.format(tar_base))):
-                        tar.add(f, arcname=tar_name)
-            src_dir = 'in_progress/clarification'
-            dest_dir = 'in_progress/new'
+                with tarfile.open(tar_name, "w") as tar:
+                    tar.add(dir_name)
+            src_dir = 'in_progress/clarification/'
+            dest_dir = 'new/'
         else:
             print('The supplied JSON name does not match any in-progress ',
                     end='')
-            print('validation or labeling sessions.')
+            print('validation or labeling sessions or clarification.')
             print('Current labeling sessions: {}'.format(labeling_tars))
             print('Current validation sessions: {}'.format(validation_tars))
+            print('Current clarification sessions: {}'.format(clarification_tars))
             sys.exit(-1)
 
         if not complete:
@@ -156,62 +165,64 @@ def app(args):
             print('robosub.eecs.wsu.edu:/data/vision/labeling/' + src_dir)
             sys.exit(-1)
 
-        # If the annotations already exist on the server, pull them down to
-        # figure out what new labels were added for stat tracking.
-        previous_annotations = []
-        with sftp.cd(src_dir):
-            if os.path.basename(args.annotations) in sftp.listdir():
-                with tempfile.NamedTemporaryFile() as tempf:
-                    sftp.get(os.path.basename(args.annotations), tempf.name)
-                    with open(tempf.name, 'r') as f:
-                        previous_annotations = json.load(f)
+            # If the annotations already exist on the server, pull them down to
+            # figure out what new labels were added for stat tracking.
+        if tar_name not in clarification_tars:
+            previous_annotations = []
+            with sftp.cd(src_dir):
+                if os.path.basename(args.annotations) in sftp.listdir():
+                    with tempfile.NamedTemporaryFile() as tempf:
+                        sftp.get(os.path.basename(args.annotations), tempf.name)
+                        with open(tempf.name, 'r') as f:
+                            previous_annotations = json.load(f)
 
-        with open(args.annotations, 'r') as f:
-            new_annotations = json.load(f)
+            with open(args.annotations, 'r') as f:
+                new_annotations = json.load(f)
 
-        if len(previous_annotations) and len(new_annotations) != len(previous_annotations):
-            print('Provided annotation file and server annotation file differ.')
-            sys.exit(-1)
+            if len(previous_annotations) and len(new_annotations) != len(previous_annotations):
+                print('Provided annotation file and server annotation file differ.')
+                sys.exit(-1)
 
-        log = {'labels_added': 0,
-               'images_labeled': 0,
-               'labels_validated': 0,
-               'images_validated': 0}
+            log = {'labels_added': 0,
+                   'images_labeled': 0,
+                   'labels_validated': 0,
+                   'images_validated': 0}
 
-        if len(previous_annotations) == 0:
-            for annotation in new_annotations:
-                if in_validation:
-                    log['images_validated'] += 1
-                    log['labels_validated'] += len(annotation['annotations'])
-                else:
-                    labels_added = len(annotation['annotations'])
+            if len(previous_annotations) == 0:
+                for annotation in new_annotations:
+                    if in_validation:
+                        log['images_validated'] += 1
+                        log['labels_validated'] += len(annotation['annotations'])
+                    else:
+                        labels_added = len(annotation['annotations'])
 
-                    log['labels_added'] += labels_added
-                    if labels_added > 0:
-                        log['images_labeled'] += 1
-        else:
-            for old, new in zip(previous_annotations, new_annotations):
-                if in_validation:
-                    log['images_validated'] += 1
-                    try:
-                        status = new['status']
+                        log['labels_added'] += labels_added
+                        if labels_added > 0:
+                            log['images_labeled'] += 1
+            else:
+                for old, new in zip(previous_annotations, new_annotations):
+                    if in_validation:
+                        log['images_validated'] += 1
                         try:
-                            old_status = old['status']
-                            if old_status != status:
+                            status = new['status']
+                            try:
+                                old_status = old['status']
+                                if old_status != status:
+                                    log['labels_validated'] += len(new['annotations'])
+                                    log['images_validated'] += 1
+                            except:
                                 log['labels_validated'] += len(new['annotations'])
                                 log['images_validated'] += 1
                         except:
-                            log['labels_validated'] += len(new['annotations'])
-                            log['images_validated'] += 1
-                    except:
-                        pass
-                else:
-                    labels_added = len(new['annotations']) - len(old['annotations'])
-                    if labels_added > 0:
-                        log['labels_added'] += labels_added
-                        log['images_labeled'] += 1
+                            pass
+                    else:
+                        labels_added = len(new['annotations']) - len(old['annotations'])
+                        if labels_added > 0:
+                            log['labels_added'] += labels_added
+                            log['images_labeled'] += 1
 
-        # Upload the JSON to the server.
+        # Upload the JSON to the server. Or tar if the images were bad
+        # in clarification proccess
         if not delete:
             with sftp.cd(dest_dir):
                 sftp.put(args.annotations)
@@ -220,6 +231,7 @@ def app(args):
                 sftp.put(tar_name)
 
         # Move the tar from in_progress to the proper destination.
+        # or delete tar if images were bad in clarification
         if not delete:
             sftp.rename('{}/{}'.format(src_dir, tar_name),
                         '{}/{}'.format(dest_dir, tar_name))
@@ -247,28 +259,35 @@ def app(args):
                 print('Deleting {}/'.format(directory))
                 shutil.rmtree(directory)
 
-        # Finally, upload the stats to the history folder on the
-        # server for stats tracking.
-        stats = [{'owner': data_owner,
-                  'stats': log,
-                  'date-time': datetime.datetime.now().isoformat()}]
+            # Finally, upload the stats to the history folder on the
+            # server for stats tracking.
+        if tar_name not in clarification_tars:
+            stats = [{'owner': data_owner,
+                      'stats': log,
+                      'date-time': datetime.datetime.now().isoformat()}]
 
-        # Only upload stats if someone has modified the annotations.
-        if log['images_labeled'] != 0 or log['images_validated'] != 0:
-            with tempfile.NamedTemporaryFile(prefix=data_owner) as tempf:
-                with open(tempf.name, 'w') as f:
-                    json.dump(stats, f)
+            # Only upload stats if someone has modified the annotations.
+            if log['images_labeled'] != 0 or log['images_validated'] != 0:
+                with tempfile.NamedTemporaryFile(prefix=data_owner) as tempf:
+                    with open(tempf.name, 'w') as f:
+                        json.dump(stats, f)
 
-                with sftp.cd('history'):
-                    log_files = [x for x in sftp.listdir() if x.startswith(data_owner.replace(' ', '_'))]
-                    file_numbers = [int(os.path.splitext(x)[0].split('-')[-1]) for x in log_files]
-                    if len(file_numbers) == 0:
-                        f_number = 0
-                    else:
-                        f_number = max(file_numbers) + 1
+                    with sftp.cd('history'):
+                        log_files = [x for x in sftp.listdir() if x.startswith(data_owner.replace(' ', '_'))]
+                        file_numbers = [int(os.path.splitext(x)[0].split('-')[-1]) for x in log_files]
+                        if len(file_numbers) == 0:
+                            f_number = 0
+                        else:
+                            f_number = max(file_numbers) + 1
 
-                    dst = os.path.basename(tempf.name)
-                    sftp.put(tempf.name)
-                    sftp.rename(dst, '{}-{}.log'.format(data_owner.replace(' ', '_'), f_number))
+                        dst = os.path.basename(tempf.name)
+                        sftp.put(tempf.name)
+                        sftp.rename(dst, '{}-{}.log'.format(data_owner.replace(' ', '_'), f_number))
 
         print('Data has been successfully returned.')
+
+if __name__ == '__main__':
+    if len(sys.argv) == 1:
+        print("give an argument")
+        exit(0)
+    app(argv[0])
