@@ -31,7 +31,7 @@ def app(args):
                                         'filename': annotation['filename']})
                 except:
                     pass
-    or.remove(args.name)
+    os.remove(args.name)
     # Puts all annotations into json file
     with open(tar_name, 'w') as f:
         json.dump(annotations, f, indent=4)
