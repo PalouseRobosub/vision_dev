@@ -229,6 +229,7 @@ def app(args):
         else:
             with sftp.cd(dest_dir):
                 sftp.put(tar_name)
+        os.remove(tar_name)
 
         # Move the tar from in_progress to the proper destination.
         # or delete tar if images were bad in clarification
