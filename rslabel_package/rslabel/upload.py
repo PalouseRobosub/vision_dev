@@ -139,7 +139,7 @@ def app(args):
     with pysftp.Connection('robosub.eecs.wsu.edu',
             username='sftp_user',
             password=password,
-            default_path='/data/vision/labeling/clarity') as sftp:
+            default_path='/data/vision/labeling/clarification') as sftp:
         for i, f in enumerate(files):
             bar_tar.update(i)
             sftp.put(f)
