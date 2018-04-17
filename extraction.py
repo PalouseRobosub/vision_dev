@@ -25,19 +25,22 @@ def app(args):
                     found.append(p)
             if found != []:
                 try:
-                    os.rename(annotation['filename'], "new/" + annotation['filename'])
+                    os.rename(annotation['filename'], tar_name + "/" + annotation['filename'])
                     annotations.append({'annotations': found,
                                         'class': 'image',
                                         'filename': annotation['filename']})
                 except:
                     pass
-
-    with open(args.name, 'w') as f:
+    or.remove(args.name)
+    # Puts all annotations into json file
+    with open(tar_name, 'w') as f:
         json.dump(annotations, f, indent=4)
 
+    # Optional flag that will put things into tar
     if args.tar:
         with tarfile.open(tar_name, "w") as tar:
-            tar.add(os.path.dirname(args.name))
+            tar.add(tar_name)
+        os.remove(tar_name)
 
 if __name__ == '__main__':
 
