@@ -8,13 +8,13 @@
 
 import argparse
 
-import collect
-import get
-import marker
-import ret
-import show
-import stats
-import upload
+from rslabel import collect
+from rslabel import get
+from rslabel import marker
+from rslabel import ret
+from rslabel import show
+from rslabel import stats
+from rslabel import upload
 
 
 if __name__ == '__main__':
