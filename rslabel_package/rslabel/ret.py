@@ -52,6 +52,7 @@ def app(args):
     with open(args.annotations, 'r') as f:
         json_contents = json.load(f)
     tar_name = os.path.splitext(os.path.basename(args.annotations))[0] + '.tar'
+
     # Open an SFTP connection with the robosub server.
     with pysftp.Connection('robosub.eecs.wsu.edu',
                 username='sftp_user',
@@ -70,10 +71,11 @@ def app(args):
             clarification_tars = [x for x in sftp.listdir() if x.endswith('.tar')]
 
         in_validation = False
+        in_clarification = False
         delete = False
 
         # If the dataset is currently being labeled, set up the proper source
-        # and destination paths on the server. If labeling or validation or
+        # and destination paths on the server. If labeling, validation or
         # clarification is not fully completed, move from in_progress back
         # into the intermediate step.
         if tar_name in labeling_tars:
@@ -102,7 +104,7 @@ def app(args):
             src_dir = 'in_progress/validation/'
             dest_dir = 'done/' if complete else 'unvalidated/'
         elif tar_name in clarification_tars:
-            delete = True
+            in_clarification = True
             complete = True
 
             dir_name = os.path.dirname(args.annotations)
@@ -112,35 +114,21 @@ def app(args):
                 try:
                     ann = annotation['status']
                     if ann == 'Bad':
-                        os.remove("{}/{}".format(dir_name, annotation['filename']))
+                        delete = True
                 except:
                     complete = False
                     pass
-            # If we need to delete json file, because it has bad images
-            if delete:
-                annotations = []
-                tar_base = os.path.splitext(tar_name)[0]
-                json_name = tar_base + '.json'
-                if dir_name == '':
-                    dir_name = "."
-                for f in sorted(glob.glob('{}/*.jpg'.format(tar_base))):
-                    annotations.append({'annotations': [],
-                                        'class': 'image',
-                                        'filename': os.path.basename(f),
-                                        'unlabeled': True})
 
-                os.remove(args.annotations)
-                os.remove("{}/{}".format(dir_name, dir_name + "-original.json"))
-                with open(args.annotations, 'w') as f:
-                    json.dump(annotations, f, indent=4)
-                with tarfile.open(tar_name, "w") as tar:
-                    tar.add(dir_name)
-            src_dir = 'in_progress/clarification/'
-            dest_dir = 'new/'
+            if not delete:
+                src_dir = 'in_progress/clarification/'
+                dest_dir = 'new/' if complete else 'clarification/'
+            else:
+                src_dir = 'in_progress/clarification/'
+                dest_dir = 'in_progress/clarification/temp/' if complete else 'clarification/'
         else:
             print('The supplied JSON name does not match any in-progress ',
                     end='')
-            print('validation or labeling sessions or clarification.')
+            print('validation, labeling or clarification sessions.')
             print('Current labeling sessions: {}'.format(labeling_tars))
             print('Current validation sessions: {}'.format(validation_tars))
             print('Current clarification sessions: {}'.format(clarification_tars))
@@ -151,6 +139,10 @@ def app(args):
                 print('Validation was not completed. Returning progress to ',
                         end='')
                 print('unvalidated datasets.')
+            elif in_clarification:
+                print('clarification was not completed. Returning progress to new ',
+                        end='')
+                print('datasets.')
             else:
                 print('Labeling was not completed. Returning progress to new ',
                         end='')
@@ -223,22 +215,17 @@ def app(args):
 
         # Upload the JSON to the server. Or tar if the images were bad
         # in clarification proccess
-        if not delete:
-            with sftp.cd(dest_dir):
-                sftp.put(args.annotations)
-        else:
-            with sftp.cd(dest_dir):
-                sftp.put(tar_name)
-        os.remove(tar_name)
+        with sftp.cd(dest_dir):
+            sftp.put(args.annotations)
 
         # Move the tar from in_progress to the proper destination.
         # or delete tar if images were bad in clarification
-        if not delete:
-            sftp.rename('{}/{}'.format(src_dir, tar_name),
-                        '{}/{}'.format(dest_dir, tar_name))
-        else:
-            sftp.remove('{}/{}'.format(src_dir, tar_name))
+        sftp.rename('{}/{}'.format(src_dir, tar_name),
+                    '{}/{}'.format(dest_dir, tar_name))
 
+        if delete and complete:
+            with sftp.cd(dest_dir):
+                sftp.execute("delete.py")
         # Remove the ownership and annotation files.
         with sftp.cd(src_dir):
             if os.path.basename(args.annotations) in sftp.listdir():
@@ -286,9 +273,3 @@ def app(args):
                         sftp.rename(dst, '{}-{}.log'.format(data_owner.replace(' ', '_'), f_number))
 
         print('Data has been successfully returned.')
-
-if __name__ == '__main__':
-    if len(sys.argv) == 1:
-        print("give an argument")
-        exit(0)
-    app(argv[0])
