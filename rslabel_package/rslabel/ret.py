@@ -52,7 +52,6 @@ def app(args):
     with open(args.annotations, 'r') as f:
         json_contents = json.load(f)
     tar_name = os.path.splitext(os.path.basename(args.annotations))[0] + '.tar'
-
     # Open an SFTP connection with the robosub server.
     with pysftp.Connection('robosub.eecs.wsu.edu',
                 username='sftp_user',
@@ -75,7 +74,7 @@ def app(args):
         delete = False
 
         # If the dataset is currently being labeled, set up the proper source
-        # and destination paths on the server. If labeling, validation or
+        # and destination paths on the server. If labeling or validation or
         # clarification is not fully completed, move from in_progress back
         # into the intermediate step.
         if tar_name in labeling_tars:
@@ -128,7 +127,7 @@ def app(args):
         else:
             print('The supplied JSON name does not match any in-progress ',
                     end='')
-            print('validation, labeling or clarification sessions.')
+            print('validation or labeling sessions or clarification.')
             print('Current labeling sessions: {}'.format(labeling_tars))
             print('Current validation sessions: {}'.format(validation_tars))
             print('Current clarification sessions: {}'.format(clarification_tars))
