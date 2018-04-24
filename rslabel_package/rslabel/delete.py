@@ -1,10 +1,8 @@
 #!/usr/bin/python
 # This script is designed to remove bad images given tar name and json file to be present
 
-import argparse
 import json
 import os
-import pysftp
 import sys
 import tempfile
 import glob
