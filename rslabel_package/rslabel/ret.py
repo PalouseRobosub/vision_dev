@@ -52,6 +52,7 @@ def app(args):
     with open(args.annotations, 'r') as f:
         json_contents = json.load(f)
     tar_name = os.path.splitext(os.path.basename(args.annotations))[0] + '.tar'
+
     # Open an SFTP connection with the robosub server.
     with pysftp.Connection('robosub.eecs.wsu.edu',
                 username='sftp_user',
@@ -74,7 +75,7 @@ def app(args):
         delete = False
 
         # If the dataset is currently being labeled, set up the proper source
-        # and destination paths on the server. If labeling or validation or
+        # and destination paths on the server. If labeling, validation or
         # clarification is not fully completed, move from in_progress back
         # into the intermediate step.
         if tar_name in labeling_tars:
@@ -91,8 +92,8 @@ def app(args):
             src_dir = 'in_progress/labeling/'
             dest_dir = 'unvalidated/' if complete else 'new/'
         elif tar_name in validation_tars:
-            in_validation = True
 
+            in_validation = True
             complete = True
             for annotation in json_contents:
                 try:
@@ -103,9 +104,9 @@ def app(args):
             src_dir = 'in_progress/validation/'
             dest_dir = 'done/' if complete else 'unvalidated/'
         elif tar_name in clarification_tars:
+
             in_clarification = True
             complete = True
-
             dir_name = os.path.dirname(args.annotations)
 
             # Looping over to see if there are bad images, and see if the tar is complete
@@ -127,7 +128,7 @@ def app(args):
         else:
             print('The supplied JSON name does not match any in-progress ',
                     end='')
-            print('validation or labeling sessions or clarification.')
+            print('validation, labeling sessions or clarification.')
             print('Current labeling sessions: {}'.format(labeling_tars))
             print('Current validation sessions: {}'.format(validation_tars))
             print('Current clarification sessions: {}'.format(clarification_tars))
