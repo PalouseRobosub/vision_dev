@@ -225,7 +225,7 @@ def app(args):
 
         if delete and complete:
             with sftp.cd(dest_dir):
-                sftp.execute("delete.py")
+                sftp.execute("delete.py {}".format(tar_name))
         # Remove the ownership and annotation files.
         with sftp.cd(src_dir):
             if os.path.basename(args.annotations) in sftp.listdir():

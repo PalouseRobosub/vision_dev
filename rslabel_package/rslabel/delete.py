@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # This script is designed to remove bad images given tar name and json file to be present
 
+import argparse
 import json
 import os
 import sys
@@ -11,10 +12,12 @@ import tarfile
 # Main function
 def app(args):
     base_name = os.path.splitext(os.path.basename(args.tarname))[0]
-    os.rename(args.tarname, base_name + "-delete.json")
+    print("Working on {}".format(base_name))
+    os.rename(base_name + ".json", base_name + "-delete.json")
     os.remove(base_name + ".json")
 
     # Extract tar
+    print("Extracting")
     with tarfile.TarFile(args.tarname) as tf:
         tf.extractall()
     os.remove(args.tarname)
@@ -27,10 +30,12 @@ def app(args):
         try:
             ann = annotation['status']
             if ann == 'Bad':
+                print("Removing {}".format(annotation['filename']))
                 os.remove("{}/{}".format(base_name, annotation['filename']))
         except:
             pass
     annotations = []
+    print("Creating new json")
     for f in sorted(glob.glob('{}/*.jpg'.format(base_name))):
         annotations.append({'annotations': [],
                             'class': 'image',
@@ -39,11 +44,12 @@ def app(args):
     os.remove(base_name + '-delete.json')
     with open("{}/{}".format(base_name, base_name + '.json'), 'w') as f:
         json.dump(annotations, f, indent=4)
+    print("Putting everything back into tar")
     with tarfile.open(base_name + '.tar', "w") as tar:
         tar.add(base_name)
-
+    print("Putting tar up for labeling")
     os.rename(base_name + '.tar', "../../new/{}".format(base_name + '.tar'))
-
+    print("Done!")
 if __name__ == '__main__':
     # Arguement handler
     parser = argparse.ArgumentParser(description='Utility for deleting bad images.')
