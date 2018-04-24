@@ -2,20 +2,19 @@
 # This script is designed to remove bad images given tar name and json file to be present
 
 import argparse
-import datetime
 import json
 import os
 import pysftp
-import shutil
 import sys
 import tempfile
 import glob
 import tarfile
 
-
 # Main function
 def app(args):
     base_name = os.path.splitext(os.path.basename(args.tarname))[0]
+    os.rename(args.tarname, base_name + "-delete.json")
+    os.remove(base_name + ".json")
 
     # Extract tar
     with tarfile.TarFile(args.tarname) as tf:
