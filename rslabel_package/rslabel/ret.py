@@ -215,8 +215,9 @@ def app(args):
 
         # Upload the JSON to the server. Or tar if the images were bad
         # in clarification proccess
-        with sftp.cd(dest_dir):
-            sftp.put(args.annotations)
+        if delete or (tar_name not in clarification_tars):
+            with sftp.cd(dest_dir):
+                sftp.put(args.annotations)
 
         # Move the tar from in_progress to the proper destination.
         # or delete tar if images were bad in clarification

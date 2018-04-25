@@ -71,6 +71,7 @@ def app(args):
             sys.exit(0)
 
         tar = str(tars[0])
+        tar_name = os.path.splitext(tar)[0]
 
         print('Grabbing {}'.format(tar))
 
@@ -123,7 +124,7 @@ def app(args):
                 # available on the server.
                 print('Generating JSON for the dataset.')
                 annotations = []
-                for f in sorted(glob.glob('{}/*.jpg'.format(tar_base))):
+                for f in sorted(glob.glob('{}/*.jpg'.format(tar_name))):
                     annotations.append({'annotations': [],
                                         'class': 'image',
                                         'filename': os.path.basename(f),
