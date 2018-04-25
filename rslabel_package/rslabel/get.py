@@ -74,8 +74,6 @@ def app(args):
 
         print('Grabbing {}'.format(tar))
 
-        tar_name = os.path.splitext(tar)[0]
-
         # Move tar to in_progress - This prevents other users from working on
         # the same data as us.
         sftp.rename(src_dir + tar, dest_dir + tar)
@@ -125,7 +123,7 @@ def app(args):
                 # available on the server.
                 print('Generating JSON for the dataset.')
                 annotations = []
-                for f in sorted(glob.glob('{}/*.jpg'.format(tar_name))):
+                for f in sorted(glob.glob('{}/*.jpg'.format(tar_base))):
                     annotations.append({'annotations': [],
                                         'class': 'image',
                                         'filename': os.path.basename(f),
