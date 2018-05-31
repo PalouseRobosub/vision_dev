@@ -273,6 +273,6 @@ def app(args):
                         sftp.put(tempf.name)
                         sftp.rename(dst, '{}-{}.log'.format(data_owner.replace(' ', '_'), f_number))
 
-        sftp.execute("python /data/vision/labeling/done/count/count.py") #Update Stats on the server
+        sftp.execute("python /data/vision/labeling/done/count/count.py") # Update Stats on the server
 
         print('Data has been successfully returned.')
