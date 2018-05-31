@@ -9,14 +9,14 @@ import tempfile
 
 def main():
 
-    jsons = [x for x in os.listdir('..') if x.endswith('json')]
+    jsons = [x for x in os.listdir('/data/vision/labeling/done/') if x.endswith('json')]
 
     output_dictionary = dict()
 
     print("Starting scanning.")
     for f in jsons:
 
-        with open('{}/{}'.format('..', f), 'r') as f:
+        with open('{}/{}'.format('/data/vision/labeling/done', f), 'r') as f:
             images = json.load(f)
 
         for image in images:
@@ -34,7 +34,7 @@ def main():
                 if 'status' in image and image['status'] == 'Good':
                     output_dictionary[label_type]['good'] += 1
 
-    with open("count.json", 'w') as m:
+    with open("/data/vision/labeling/done/count/count.json", 'w') as m:
         json.dump(output_dictionary, m, indent=4)
     print("\nDone.")
 
