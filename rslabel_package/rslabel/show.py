@@ -24,39 +24,16 @@ except:
 
 def get_json_stats(sftp):
     """ Collects metadata about the completed datasets. """
-    jsons = [x for x in sftp.listdir() if x.endswith('json')]
 
-    working_directory = tempfile.mkdtemp()
+    print('Grabbing JSON information...')
+    sftp.get("count/count.json")
 
     output_dictionary = dict()
 
-    # Get information about each JSON in the directory.
-    print('Grabbing JSON information...')
-    bar = progressbar.ProgressBar(max_value=len(jsons))
-    for i, f in enumerate(jsons):
-        bar.update(i)
-        sftp.get(f, localpath='{}/{}'.format(working_directory, f))
-        with open('{}/{}'.format(working_directory, f), 'r') as f:
-            images = json.load(f)
+    with open("count.json", 'r') as f:
+        output_dictionary = json.load(f)
 
-        for image in images:
-            if 'annotations' not in image:
-                continue
-
-            # Count the annotations (total and correct) marked for each image.
-            for annotation in image['annotations']:
-                label_type = annotation['class']
-                if label_type not in output_dictionary:
-                    output_dictionary[label_type] = {'count': 0,
-                                                     'good': 0}
-
-                output_dictionary[label_type]['count'] += 1
-                if 'status' in image and image['status'] == 'Good':
-                    output_dictionary[label_type]['good'] += 1
-    bar.finish()
-
-    # Remove the temporary folder where the JSONs were stored.
-    shutil.rmtree(working_directory)
+    os.remove("count.json")
 
     return output_dictionary
 
