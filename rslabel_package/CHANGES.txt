@@ -1,4 +1,4 @@
 0.6.0: Added in `stats` command for stat tracking.
 0.7.0: Added clarification step.
 0.8.0: Improved efficiency of `show`
-0.9.0: `get`, `return` and `show` now have download/upload progress bar.
+0.9.0: `get`, `return` and `show` now have download/upload progress bars.
