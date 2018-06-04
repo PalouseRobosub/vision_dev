@@ -16,12 +16,16 @@ import shutil
 import sys
 import tarfile
 import tempfile
+import progressbar
 
 try:
     input = raw_input
 except:
     pass
 
+
+def progress(done, total):
+    bar.update(done)
 
 def app(args):
     """ Main entry point for the dataset getter application.
@@ -92,7 +96,10 @@ def app(args):
         shutil.rmtree(temp_dir)
 
         # Get the tar and untar it.
-        sftp.get(dest_dir + tar)
+        total = sftp.stat(dest_dir + tar)
+        bar = progressbar.ProgressBar(max_value=total.st_size)
+        sftp.get(dest_dir + tar, callback=progress)
+        bar.finish()
 
         with tarfile.TarFile(tar) as tf:
             tf.extractall()

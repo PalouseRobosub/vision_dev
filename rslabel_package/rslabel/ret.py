@@ -17,12 +17,15 @@ import sys
 import tempfile
 import glob
 import tarfile
+import progressbar
 
 try:
     input = raw_input
 except:
     pass
 
+def progress(done, total):
+    bar.update(done)
 
 def app(args):
     """ Main entry point for returning data to the server.
@@ -217,7 +220,10 @@ def app(args):
         # in clarification proccess
         if delete or (tar_name not in clarification_tars):
             with sftp.cd(dest_dir):
-                sftp.put(args.annotations)
+                total = sftp.stat(args.annotations)
+                bar = progressbar.ProgressBar(max_value=total.st_size)
+                sftp.put(args.annotations, callback=progress)
+                bar.finish()
 
         # Move the tar from in_progress to the proper destination.
         # or delete tar if images were bad in clarification

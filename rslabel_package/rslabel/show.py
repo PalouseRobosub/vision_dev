@@ -21,12 +21,17 @@ try:
 except:
     pass
 
+def progress(done, total):
+    bar.update(done)
 
 def get_json_stats(sftp):
     """ Collects metadata about the completed datasets. """
 
     print('Grabbing JSON information...')
-    sftp.get("count/count.json")
+    total = sftp.stat("count/count.json")
+    bar = progressbar.ProgressBar(max_value=total.st_size)
+    sftp.get("count/count.json", callback=progress)
+    bar.finish()
 
     output_dictionary = dict()
 
