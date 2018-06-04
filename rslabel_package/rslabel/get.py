@@ -23,7 +23,10 @@ try:
 except:
     pass
 
+# download progress bar
+bar = progressbar.ProgressBar()
 
+# update progress bar
 def progress(done, total):
     bar.update(done)
 
@@ -93,13 +96,14 @@ def app(args):
         with sftp.cd(dest_dir):
             sftp.put('{}/{}'.format(temp_dir, owner_file))
 
-        shutil.rmtree(temp_dir)
+            # Get the tar and untar it.
+            global bar
+            total_size = sftp.stat(tar)
+            bar = progressbar.ProgressBar(max_value=total_size.st_size)
+            sftp.get(tar, callback=progress)
+            bar.finish()
 
-        # Get the tar and untar it.
-        total = sftp.stat(dest_dir + tar)
-        bar = progressbar.ProgressBar(max_value=total.st_size)
-        sftp.get(dest_dir + tar, callback=progress)
-        bar.finish()
+        shutil.rmtree(temp_dir)
 
         with tarfile.TarFile(tar) as tf:
             tf.extractall()

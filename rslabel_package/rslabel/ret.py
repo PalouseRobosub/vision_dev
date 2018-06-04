@@ -24,6 +24,10 @@ try:
 except:
     pass
 
+# Upload progress bar
+bar = progressbar.ProgressBar()
+
+# update progress bar
 def progress(done, total):
     bar.update(done)
 
@@ -220,8 +224,11 @@ def app(args):
         # in clarification proccess
         if delete or (tar_name not in clarification_tars):
             with sftp.cd(dest_dir):
-                total = sftp.stat(args.annotations)
-                bar = progressbar.ProgressBar(max_value=total.st_size)
+
+                # Return tar file
+                global bar
+                total_size = os.stat(args.annotations)
+                bar = progressbar.ProgressBar(max_value=total_size.st_size)
                 sftp.put(args.annotations, callback=progress)
                 bar.finish()
 
