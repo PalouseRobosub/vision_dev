@@ -80,6 +80,7 @@ def app(args):
         in_validation = False
         in_clarification = False
         delete = False
+        bad_count = 0
 
         # If the dataset is currently being labeled, set up the proper source
         # and destination paths on the server. If labeling, validation or
@@ -122,6 +123,7 @@ def app(args):
                     ann = annotation['status']
                     if ann == 'Bad':
                         delete = True
+                        bad_count += 1
                 except:
                     complete = False
                     pass
@@ -238,8 +240,10 @@ def app(args):
                     '{}/{}'.format(dest_dir, tar_name))
 
         if delete and complete:
+            print('Found {} bad images. Deleting'.format(bad_count))
             with sftp.cd(dest_dir):
                 sftp.execute("python /data/vision/labeling/in_progress/clarification/temp/delete.py {} --remote".format(tar_name))
+                print('Deleted, taring up remaining images and puting into labeling folder.')
         # Remove the ownership and annotation files.
         with sftp.cd(src_dir):
             if os.path.basename(args.annotations) in sftp.listdir():
